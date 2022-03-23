@@ -11,7 +11,7 @@ public class OpenQ extends Question {
 	
 	@Override
 	public String toString() {
-		return "[" + getQuestionNumber() + "] Open Questions: " + getQuestion() + " The answer: " + getAnswer();
+		return "[" + getQuestionNumber() + "] Open Questions: \n" + getQuestion() + "\nThe answer: " + getAnswer() + "\n";
 	}
 
 	public String setAnswer() {

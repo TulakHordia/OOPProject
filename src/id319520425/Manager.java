@@ -1,6 +1,7 @@
 package id319520425;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 import id319520425.AmericanQ.eAddAns;
@@ -47,10 +48,20 @@ public class Manager {
 	}
 	
 	private Question getQuestionById(int questionNumber) {
+		if (questionNumber == allQuestions.length) {
+			return null;
+		}
+		if (allQuestions[questionNumber] == null) {
+			getQuestionById(questionNumber+1);
+		}
 		for (int i = 0; i < allQuestions.length; i++) {
-			if (allQuestions[i].getQuestionNumber() == questionNumber) {
-				return allQuestions[i];
+			while (allQuestions[i] != null) {
+				if (allQuestions[i].getQuestionNumber() == questionNumber) {
+					return allQuestions[i];
+				}
+				break;
 			}
+
 		}
 		return null;
 	}
@@ -133,7 +144,7 @@ public class Manager {
 		for (int i = 0; i < allQuestions.length; i++) {
 			if (allQuestions[i] instanceof AmericanQ) {
 				AmericanQ aQ = (AmericanQ) allQuestions[i];
-				System.out.println(allQuestions[i].toString());
+				System.out.println(allQuestions[i]);
 			}
 		}
 	}
@@ -143,12 +154,151 @@ public class Manager {
 		for (int i = 0; i < allQuestions.length; i++) {
 			if (allQuestions[i] instanceof OpenQ) {
 				OpenQ oQ = (OpenQ) allQuestions[i];
-				System.out.println(allQuestions[i].toString());
+				System.out.println(allQuestions[i]);
 			}
 		}
 	}
 	
+	public void sortAndPrintAutoExamArray(Question[] array) {
+		Question temp;
+		for (int i = 0; i < array.length; i++) {
+			for (int j = i+1; j < array.length; j++) {
+				if (array[i].getQuestion().compareTo(array[j].getQuestion())> 0) {
+					temp = array[i];
+					array[i] = array[j];
+					array[j] = temp;
+				}
+			}
+		}
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != null) {
+				System.out.println(array[i]);
+			}
+		}
+	}
+	
+	public boolean checkQuestionIsInArray(Question[] array, Question quest) {
+		if (quest == null) {
+			return false;
+		}
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != null) {
+				if (array[i].getQuestion().equals(quest.getQuestion())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public Question generateNewQuestion(Question[] array) {
+		Random rand = new Random();
+		Question quest = null;
+		while (quest == null) {
+			int n = rand.nextInt(allQuestions.length);
+			quest = getQuestionById(n);	
+			if(checkQuestionIsInArray(array, quest)) {
+				quest = null;
+			}
+			
+		}
+		return quest;
+	}
+	
 	public void autoCreateExam(int amount) {
+		Question[] autoExamArray = new Question[amount];
+		for (int i = 0; i < amount; i++) {
+			Question quest = generateNewQuestion(autoExamArray);
+			if (quest instanceof OpenQ) {
+				OpenQ open = (OpenQ) quest;
+				autoExamArray[i] = open;
+			}
+			if (quest instanceof AmericanQ) {
+				AmericanQ ameriQ = (AmericanQ) quest;
+				autoExamArray[i] = ameriQ;
+				int trueCounter = 0;
+				int falseCounter = 0;
+				for (int j = 0; j < 4 ; j++) {
+					if (ameriQ.getAnswers(j).IsTrue()) {
+						trueCounter++;
+					}
+					else {
+						falseCounter++;
+					}
+				}
+				if (trueCounter == 1) {
+					ameriQ.addAnswer(new AmericanAnswers("Nothing is correct", false));
+					ameriQ.addAnswer(new AmericanAnswers("More than one answer is correct", false));
+				}
+				if (trueCounter > 1) {
+					ameriQ.addAnswer(new AmericanAnswers("Nothing is correct", false));
+					ameriQ.addAnswer(new AmericanAnswers("More than one answer is correct", true));
+				}
+				if (falseCounter == 4 && trueCounter == 0) {
+					ameriQ.addAnswer(new AmericanAnswers("Nothing is correct", true));
+					ameriQ.addAnswer(new AmericanAnswers("More than one answer is correct", false));
+				}
+			}
+		}
+		sortAndPrintAutoExamArray(autoExamArray);
+	}
+	
+	public boolean checkInstanceOfQuestion(int questionNum) {
+		Question quest = getQuestionById(questionNum);
+		if (quest instanceof OpenQ) {
+			return true;
+		}
+		if (quest instanceof AmericanQ) {
+			return false;
+		}
+		return false;
+	}
+	
+	public void addAmericanAnswersToManualExam(int questionNum, int answerNum) {
 		
+	}
+	
+	public void createManualExam(int amountOfQuestions, int questionNum) {
+		Question[] manualExamArray = new Question[amountOfQuestions];
+		if (amountOfQuestions == manualExamArray.length) {
+			manualExamArray = Arrays.copyOf(manualExamArray, manualExamArray.length*2);
+		}
+		for (int i = 0; i < manualExamArray.length; i++) {
+			Question quest = getQuestionById(questionNum);
+			if (quest instanceof OpenQ) {
+				OpenQ open = (OpenQ) quest;
+				manualExamArray[i] = open;
+				System.out.println("Question added succesfully, new question num: " + (i+1));
+			}
+			if (quest instanceof AmericanQ) {
+				AmericanQ ameriQ = (AmericanQ) quest;
+				manualExamArray[i] = ameriQ;
+				System.out.println("Question added succesfully, new question num: " + (i+1));
+				
+				
+				int trueCounter = 0;
+				int falseCounter = 0;
+				for (int j = 0; j < 4 ; j++) {
+					if (ameriQ.getAnswers(j).IsTrue()) {
+						trueCounter++;
+					}
+					else {
+						falseCounter++;
+					}
+				}
+				if (trueCounter == 1) {
+					ameriQ.addAnswer(new AmericanAnswers("Nothing is correct", false));
+					ameriQ.addAnswer(new AmericanAnswers("More than one answer is correct", false));
+				}
+				if (trueCounter > 1) {
+					ameriQ.addAnswer(new AmericanAnswers("Nothing is correct", false));
+					ameriQ.addAnswer(new AmericanAnswers("More than one answer is correct", true));
+				}
+				if (falseCounter == 4 && trueCounter == 0) {
+					ameriQ.addAnswer(new AmericanAnswers("Nothing is correct", true));
+					ameriQ.addAnswer(new AmericanAnswers("More than one answer is correct", false));
+				}
+			}
+		}
 	}
 }

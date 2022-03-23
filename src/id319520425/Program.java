@@ -8,11 +8,12 @@ public class Program {
 		
 		Manager manage = new Manager();
 		
-		String quest1 = "First question";
-		String quest2 = "Second question";
-		String quest3 = "Third question";
-		String quest4 = "Fourth question";
-		String quest5 = "Fifth question";
+		String quest1 = "A) First question";
+		String quest2 = "B) Second question";
+		String quest3 = "C) Third question";
+		String quest4 = "D) Fourth question";
+		String quest5 = "E) Fifth question";
+		String quest6 = "F) Sixth question";
 		
 		String ans1 = "First answer";
 		String ans2 = "Second answer";
@@ -23,9 +24,18 @@ public class Program {
 		String ans7 = "Seventh answer";
 		String ans8 = "Eighth answer";
 		
+		String ansF1 = "False answer #1";
+		String ansF2 = "False answer #2";
+		String ansF3 = "False answer #3";
+		String ansF4 = "False answer #4";
+		
+		String openAns = "First open answer";
+		String openAns2 = "Second open answer";
+		
 		AmericanQ ameriTest1 = new AmericanQ(quest1);
 		AmericanQ ameriTest2 = new AmericanQ(quest2);
-		AmericanQ ameriTest3 = new AmericanQ(quest5);
+		AmericanQ ameriTest3 = new AmericanQ(quest3);
+		AmericanQ ameriTest4 = new AmericanQ(quest4);
 		
 		manage.addAmericanQuestion(ameriTest1);
 		manage.addAmericanQuestion(ameriTest2);
@@ -39,22 +49,35 @@ public class Program {
 		AmericanAnswers ameriAns6 = new AmericanAnswers(ans6, true);
 		AmericanAnswers ameriAns7 = new AmericanAnswers(ans7, true);
 		AmericanAnswers ameriAns8 = new AmericanAnswers(ans8, true);
+		AmericanAnswers ameriAnsF1 = new AmericanAnswers(ansF1, false);
+		AmericanAnswers ameriAnsF2 = new AmericanAnswers(ansF2, false);
+		AmericanAnswers ameriAnsF3 = new AmericanAnswers(ansF3, false);
+		AmericanAnswers ameriAnsF4 = new AmericanAnswers(ansF4, false);
+		
 		
 		ameriTest1.addAnswer(ameriAns);
 		ameriTest1.addAnswer(ameriAns2);
 		ameriTest1.addAnswer(ameriAns3);
-		ameriTest1.addAnswer(ameriAns4);
-		ameriTest1.addAnswer(ameriAns5);
-		ameriTest1.addAnswer(ameriAns6);
+		ameriTest1.addAnswer(ameriAnsF1);
 		
-		ameriTest2.addAnswer(ameriAns6);
-		ameriTest2.addAnswer(ameriAns4);
+		ameriTest2.addAnswer(ameriAnsF1);
+		ameriTest2.addAnswer(ameriAnsF2);
+		ameriTest2.addAnswer(ameriAnsF3);
+		ameriTest2.addAnswer(ameriAnsF4);
 		
-		ameriTest3.addAnswer(ameriAns7);
-		ameriTest3.addAnswer(ameriAns8);
+		ameriTest3.addAnswer(ameriAns5);
+		ameriTest3.addAnswer(ameriAnsF2);
+		ameriTest3.addAnswer(ameriAnsF3);
+		ameriTest3.addAnswer(ameriAnsF4);
+		
+		//one false one correct
+//		ameriTest4.addAnswer(ameriAns6);
+//		ameriTest4.addAnswer(ameriAns7);
+//		ameriTest4.addAnswer(ameriAnsF3);
+//		ameriTest4.addAnswer(ameriAnsF3);
 
-		manage.addOpenQuestions(quest3, ans5);
-		manage.addOpenQuestions(quest4, ans6);
+		manage.addOpenQuestions(quest5, openAns);
+		manage.addOpenQuestions(quest6, openAns2);
 		
 		Scanner input = new Scanner(System.in);
 		int choice = 0;
@@ -215,17 +238,35 @@ public class Program {
 				if (newChoice3 == 'y' || newChoice3 == 'Y') {
 					manage.printEverything();
 				}
-				
+				System.out.println("How much questions do you want in your exam? ");
+				int amountOfQuestions = input.nextInt();
+				input.nextLine();
+				for (int i = 0; i < amountOfQuestions; i++) {
+					System.out.println("Enter the question number to add it to the exam.");
+					System.out.println("Type -1 to return to the menu.");
+					int questionNum = input.nextInt();
+					input.nextLine();
+					if (manage.checkInstanceOfQuestion(questionNum)) {
+						manage.createManualExam(amountOfQuestions, questionNum);
+					}
+					else if (!manage.checkInstanceOfQuestion(questionNum)) {
+						System.out.println("Enter the answer number you wish to add to this question: ");
+						int answerNum = input.nextInt();
+						input.nextLine();
+						manage.addAmericanAnswersToManualExam(questionNum, answerNum);
+					}
+				}
+
 				break;
 				
 				
 			case 7:
 				
-				System.out.println("See the full list of questions&answers? y/Y");
-				char newChoice4 = input.next().charAt(0);
-				if (newChoice4 == 'y' || newChoice4 == 'Y') {
-					manage.printEverything();
-				}
+//				System.out.println("See the full list of questions&answers? y/Y");
+//				char newChoice4 = input.next().charAt(0);
+//				if (newChoice4 == 'y' || newChoice4 == 'Y') {
+//					manage.printEverything();
+//				}
 				System.out.println("How many questions would you like in your exam? (Max 5)");
 				int questAmount = input.nextInt();
 				manage.autoCreateExam(questAmount);

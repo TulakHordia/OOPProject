@@ -35,7 +35,7 @@ public class AmericanQ extends Question {
 		}
 		//System.out.println(Answers[answersNum].toString());
 		//System.out.println("Added aye");
-		//System.out.println("ADDED ANSWERED, LOOK: q:" + this.question + "; a:" + Arrays.toString(Answers) + Answers[answersNum].IsTrue());
+//		System.out.println("ADDED ANSWERED, LOOK: q:" + this.question + "; a:" + Arrays.toString(Answers) + Answers[answersNum].IsTrue());
 		answersNum++;
 		return eAddAns.AddedSuccessfully;
 	}
@@ -52,11 +52,11 @@ public class AmericanQ extends Question {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[" + getQuestionNumber() + "] American Question: " + getQuestion() + "\n");
+		sb.append("[" + getQuestionNumber() + "] American Question: \n" + getQuestion() + "\n");
 		for (int i = 0; i < Answers.length; i++) {
 			if (Answers[i] != null) {
 				sb.append(" Answer num: [" + (i+1) + "] " + Answers[i].toString());
-				sb.append(" ----> Boolean label: " + Answers[i].IsTrue() + "\n");
+				sb.append(" [Correct or not]: " + Answers[i].IsTrue() + "\n");
 			}
 		}
 		return sb.toString();
@@ -66,19 +66,26 @@ public class AmericanQ extends Question {
 		return question;
 	}
 	
-	public AmericanAnswers getCorrectAnswer() {
-		for (int i = 0; i < Answers.length; i++) {
-			if (Answers[i].IsTrue()) {
-				return Answers[i];
-			}
-		}
-		throw new RuntimeException("No answer is marked as true");
-	}
+//	public AmericanAnswers getCorrectAnswer() {
+//		for (int i = 0; i < Answers.length; i++) {
+//			if (Answers[i].IsTrue()) {
+//				return Answers[i];
+//			}
+//			else {
+//				return null;
+//			}
+//		}
+//		throw new RuntimeException("No correct answers.");
+//	}
 
 	public int getAnswersNum() {
 		return answersNum;
 	}
 	
+	public AmericanAnswers getAnswers(int index) {
+		return Answers[index];
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
