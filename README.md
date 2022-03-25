@@ -36,6 +36,6 @@ A 'Manager' class to manage all the requests coming from the 'Program' main clas
 
 
 ### Thank you for using the program.
-Best regards,
-Benjamin Rain. :)
+### Best regards,
+### Benjamin Rain. :)
 
