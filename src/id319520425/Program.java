@@ -8,12 +8,17 @@ public class Program {
 		
 		Manager manage = new Manager();
 		
+		//General questions
 		String quest1 = "First question";
 		String quest2 = "Second question";
 		String quest3 = "Third question";
 		String quest4 = "Fourth question";
 		String quest5 = "Fifth question";
+		String quest6 = "Sixth question";
+		String quest7 = "Seventh question";
+		String quest8 = "Eighth question";
 		
+		//Just answers
 		String ans1 = "First answer";
 		String ans2 = "Second answer";
 		String ans3 = "Another answer";
@@ -23,14 +28,32 @@ public class Program {
 		String ans7 = "Seventh answer";
 		String ans8 = "Eighth answer";
 		
+		//False answers
+		String ansF1 = "False answer #1";
+		String ansF2 = "False answer #2";
+		String ansF3 = "False answer #3";
+		String ansF4 = "False answer #4";
+		String ansF5 = "False answer #5";
+		
+		//Open answers
+		String openAns = "First open answer";
+		String openAns2 = "Second open answer";
+		String openAns3 = "Third open answer";
+		String openAns4 = "Fourth open answer";
+		
+		//Create new american question objects
 		AmericanQ ameriTest1 = new AmericanQ(quest1);
 		AmericanQ ameriTest2 = new AmericanQ(quest2);
-		AmericanQ ameriTest3 = new AmericanQ(quest5);
+		AmericanQ ameriTest3 = new AmericanQ(quest3);
+		AmericanQ ameriTest4 = new AmericanQ(quest4);
 		
+		//Add american questions
 		manage.addAmericanQuestion(ameriTest1);
 		manage.addAmericanQuestion(ameriTest2);
 		manage.addAmericanQuestion(ameriTest3);
+		manage.addAmericanQuestion(ameriTest4);
 		
+		//American answers
 		AmericanAnswers ameriAns = new AmericanAnswers(ans1, true);
 		AmericanAnswers ameriAns2 = new AmericanAnswers(ans2, true);
 		AmericanAnswers ameriAns3 = new AmericanAnswers(ans3, true);
@@ -39,29 +62,53 @@ public class Program {
 		AmericanAnswers ameriAns6 = new AmericanAnswers(ans6, true);
 		AmericanAnswers ameriAns7 = new AmericanAnswers(ans7, true);
 		AmericanAnswers ameriAns8 = new AmericanAnswers(ans8, true);
+		AmericanAnswers ameriAnsF1 = new AmericanAnswers(ansF1, false);
+		AmericanAnswers ameriAnsF2 = new AmericanAnswers(ansF2, false);
+		AmericanAnswers ameriAnsF3 = new AmericanAnswers(ansF3, false);
+		AmericanAnswers ameriAnsF4 = new AmericanAnswers(ansF4, false);
+		AmericanAnswers ameriAnsF5 = new AmericanAnswers(ansF5, false);
 		
+		//More than one is correct:
 		ameriTest1.addAnswer(ameriAns);
 		ameriTest1.addAnswer(ameriAns2);
 		ameriTest1.addAnswer(ameriAns3);
 		ameriTest1.addAnswer(ameriAns4);
-		ameriTest1.addAnswer(ameriAns5);
-		ameriTest1.addAnswer(ameriAns6);
+		ameriTest1.addAnswer(ameriAnsF1);
+		ameriTest1.addAnswer(ameriAnsF4);
 		
-		ameriTest2.addAnswer(ameriAns6);
-		ameriTest2.addAnswer(ameriAns4);
+		//All false
+		ameriTest2.addAnswer(ameriAnsF1);
+		ameriTest2.addAnswer(ameriAnsF2);
+		ameriTest2.addAnswer(ameriAnsF3);
+		ameriTest2.addAnswer(ameriAnsF4);
+		ameriTest2.addAnswer(ameriAnsF5);
 		
-		ameriTest3.addAnswer(ameriAns7);
-		ameriTest3.addAnswer(ameriAns8);
+		//Only one question is true
+		ameriTest3.addAnswer(ameriAns5);
+		ameriTest3.addAnswer(ameriAnsF1);
+		ameriTest3.addAnswer(ameriAnsF2);
+		ameriTest3.addAnswer(ameriAnsF3);
+		ameriTest3.addAnswer(ameriAnsF4);
+		
+		//more than one is correct #2
+		ameriTest4.addAnswer(ameriAns6);
+		ameriTest4.addAnswer(ameriAns7);
+		ameriTest4.addAnswer(ameriAns8);
+		ameriTest4.addAnswer(ameriAnsF3);
+		ameriTest4.addAnswer(ameriAnsF4);
 
-		manage.addOpenQuestions(quest3, ans5);
-		manage.addOpenQuestions(quest4, ans6);
+		//Open questions + Answers
+		manage.addOpenQuestions(quest5, openAns);
+		manage.addOpenQuestions(quest6, openAns2);
+		manage.addOpenQuestions(quest7, openAns3);
+		manage.addOpenQuestions(quest8, openAns4);
 		
 		Scanner input = new Scanner(System.in);
 		int choice = 0;
 
 		do {
 
-			System.err.println("-----Exam creator-----");
+			System.out.println("--------Exam creator--------");
 			System.out.println("-----Select option:-----");
 			System.out.println("[1] - Show all questions/answers that exist.");
 			System.out.println("[2] - Add a new question/answer.");
@@ -80,32 +127,37 @@ public class Program {
 
 			case 1:
 
-				System.err.println("-----Show all questions menu-----");
+				System.out.println("-----Show all questions menu-----");
 				System.out.println("[1] - Show all questions.");
 				System.out.println("[2] - Show only American-type questions (With their correct answers).");
 				System.out.println("[3] - Show only Open-type questions.");
+				System.out.println("[4] - Show available questions only.");
+//				System.out.println("[5] - Print all existing exams.");
 
 				int showChoice = input.nextInt();
-				while (showChoice > 0 && showChoice <= 5) {
+				while (showChoice > 0 && showChoice < 5) {
 					if (showChoice == 1) {
 						manage.printEverything();				
-						break;
 					}
 					if (showChoice == 2) {
 						manage.printAmerican();
-						break;
 					}
 					if (showChoice == 3) {
 						manage.printOpen();
-						break;
 					}
+					if (showChoice == 4) {
+						manage.printQuestionsOnly();
+					}
+//					if (showChoice == 5) {
+//						manage.printExamsArray();
+//					}
 					break;
 				}
 				break;
 
 			case 2:
 
-				System.err.println("----Add a question-----");
+				System.out.println("----Add a question-----");
 				System.out.println("[1] - Add an american-type question.");
 				System.out.println("[2] - Add an open-type question.");
 				int addQuestionChoice = input.nextInt();
@@ -124,7 +176,7 @@ public class Program {
 							String answer = input.nextLine();
 							System.out.println("Is it a correct answer or not? (true/false): ");
 							boolean isTrue = input.nextBoolean();
-							ameriC.addAnswer(new AmericanAnswers(answer, isTrue));
+							System.out.println(ameriC.addAnswer(new AmericanAnswers(answer, isTrue)));
 							input.nextLine();
 						}
 						break;
@@ -134,7 +186,7 @@ public class Program {
 						String question = input.nextLine();
 						System.out.println("Please enter an answer: ");
 						String answer = input.nextLine();
-						manage.addOpenQuestions(question, answer);
+						System.out.println(manage.addOpenQuestions(question, answer));
 						break;
 					}
 				}
@@ -152,7 +204,7 @@ public class Program {
 				input.nextLine();
 				System.out.println("Enter new text below: ");
 				String newQuestion = input.nextLine();
-				manage.updateQuestion(updateChoice, newQuestion);
+				System.out.println(manage.updateQuestion(updateChoice, newQuestion));
 				break;
 
 			case 4:
@@ -169,12 +221,13 @@ public class Program {
 					System.out.println("Please select from which question you want to update an answer: ");
 					int questionNum = input.nextInt();
 					input.nextLine();
+					manage.getAmericanAnswer(questionNum);
 					System.out.println("Please select which answer: ");
 					int answerNum = input.nextInt();
 					input.nextLine();
 					System.out.println("Please enter the new answer: ");
 					String newAnswer = input.nextLine();
-					manage.updateAnswer(questionNum, answerNum, newAnswer);
+					System.out.println(manage.updateAnswer(questionNum, answerNum, newAnswer));
 				}
 				if (updateAnswerChoice == 2) {
 					System.out.println("See the full list of questions&answers?? y/Y");
@@ -187,7 +240,7 @@ public class Program {
 					input.nextLine();
 					System.out.println("Please enter the new answer: ");
 					String newAnswer = input.nextLine();
-					manage.updateAnswer(questionNum, questionNum, newAnswer);
+					System.out.println(manage.updateAnswer(questionNum, questionNum, newAnswer));
 				}
 				break;
 
@@ -196,53 +249,89 @@ public class Program {
 				System.out.println("See the full list of questions&answers? y/Y");
 				char newChoice2 = input.next().charAt(0);
 				if (newChoice2 == 'y' || newChoice2 == 'Y') {
-					System.err.println("Can only delete from American-type questions.");
-					manage.printAmerican();
+					System.out.println("Can only delete from American-type questions.");
+					manage.printQuestionsOnly();
 				}
 				System.out.println("Please select from which question you want to delete an answer: ");
 				int questionNum1 = input.nextInt();
 				input.nextLine();
+				while (!manage.checkInstanceOfQuestion(questionNum1)) {
+					System.out.println("Cannot delete from an Open Question, select a different one: ");
+					questionNum1 = input.nextInt();
+					input.nextLine();
+				}
+				manage.getAmericanAnswer(questionNum1);
 				System.out.println("Please select which answer: ");
 				int answerNum1 = input.nextInt();
 				input.nextLine();
-				manage.deleteAnswer(questionNum1, answerNum1);
+				System.out.println(manage.deleteAnswer(questionNum1, answerNum1));
 				break;
 				
 			case 6:
 				
-				System.out.println("See the full list of questions&answers? y/Y");
-				char newChoice3 = input.next().charAt(0);
-				if (newChoice3 == 'y' || newChoice3 == 'Y') {
-					manage.printEverything();
+				System.out.println("How many questions do you want in your exam? ");
+				int amountOfQuestions = input.nextInt();
+				input.nextLine();
+				manage.setSize(amountOfQuestions);
+				manage.printQuestionsOnly();
+				int answersAmount = 0;
+				int[] answersArray = new int[0];
+				System.out.println("Please choose the question you wish to add: ");
+				for (int i = 0; i < amountOfQuestions; i++) {
+					int questionNum = input.nextInt();
+					input.nextLine();
+						if (!manage.checkInstanceOfQuestion(questionNum)) {
+							manage.addQuestionToManualExam(questionNum, null);
+						}
+						else {
+							System.out.println("Please choose the amount of answers you want for the question: ");
+							answersAmount = input.nextInt();
+							input.nextLine();
+							answersArray = new int[answersAmount];
+							System.out.println("These are the answers:");
+							char newChoice3 = input.next().charAt(0);
+							if (newChoice3 == 'y' || newChoice3 == 'Y') {
+								manage.getAmericanAnswer(questionNum);
+							}
+							System.out.println("Please select the answers you want: ");
+							for (int j = 0; j < answersArray.length; j++) {
+								answersArray[j] = input.nextInt();	
+							}
+							manage.addQuestionToManualExam(questionNum, answersArray);
+						}
 				}
-				
+				manage.createManualExamAndSendToPrint(answersArray, amountOfQuestions);
 				break;
-				
 				
 			case 7:
 				
-				System.out.println("See the full list of questions&answers? y/Y");
-				char newChoice4 = input.next().charAt(0);
-				if (newChoice4 == 'y' || newChoice4 == 'Y') {
-					manage.printEverything();
-				}
-				System.out.println("How many questions would you like in your exam? (Max 5)");
+				System.out.println("How many questions would you like in your exam? ");
+				System.out.println("There are only: " + manage.checkAllQuestionsLength() + " Questions available.");
 				int questAmount = input.nextInt();
+				input.nextLine();
+				if (questAmount < 0 || questAmount > manage.checkAllQuestionsLength()) {
+					System.out.println("Invalid amount of question, please select again: ");
+					questAmount = input.nextInt();
+					input.nextLine();
+				}
 				manage.autoCreateExam(questAmount);
 				break;
 				
 			default:
 				System.out.println("Invalid option, please choose again.");
+			}
+			System.out.println("\nDo you want to go back to the main menu? (y/n)");
 
-			}System.out.println("\nDo you want to go back to the main menu? (y/n)");
-
-			char resume = input.next().charAt(0);if(resume=='y'||resume=='Y')
-			{
+			char resume = input.next().charAt(0);
+			if(resume=='y'||resume=='Y') {
 			}else
 			{
 				System.out.println("Exiting program...");
 				System.exit(0);
 			}
-		}while(choice!=11);System.out.println("Exiting program...Thank you!");input.close();}
-
+		}
+		while(choice!=11);
+		System.out.println("Exiting program...Thank you!");
+		input.close();
+		}
 }
