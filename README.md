@@ -23,7 +23,7 @@ A program used to create and edit exams, managing specific questions and answers
 ## Usage
 Run the program, select your option from the menu and proceed along with the program requests and inputs.
 
-### Content
+## Content
 Contains a way to add a new question + answer.
 Update a question, or update/delete an answer.
 Functions to manually create an exam with the available questions or rather let the program create one for you.
