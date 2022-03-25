@@ -1,11 +1,7 @@
 package id319520425;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 public class AmericanQ extends Question {
 
-	public enum eAddAns {AlreadyExists, ListFull, AddedSuccessfully};
 	public static final int MAX_ANS = 10;
 	private AmericanAnswers[] Answers;
 	private int answersNum;
@@ -16,14 +12,14 @@ public class AmericanQ extends Question {
 		answersNum = 0;
 	}
 	
-	public eAddAns addAnswer(AmericanAnswers answer) {
+	public String addAnswer(AmericanAnswers answer) {
 		if (answersNum == MAX_ANS) {
-			return eAddAns.ListFull;
+			return "The list is full";
 		}
 		for (int i = 0; i <= answersNum; i++) {
 			if (Answers[i] != null) {
 				if (Answers[i].getAnswer().equals(answer.getAnswer())) {
-					return eAddAns.AlreadyExists;
+					return "Answer already exists";
 				}
 			}
 		}
@@ -33,11 +29,8 @@ public class AmericanQ extends Question {
 				break;
 			}
 		}
-		//System.out.println(Answers[answersNum].toString());
-		//System.out.println("Added aye");
-		//System.out.println("ADDED ANSWERED, LOOK: q:" + this.question + "; a:" + Arrays.toString(Answers) + Answers[answersNum].IsTrue());
 		answersNum++;
-		return eAddAns.AddedSuccessfully;
+		return "Answer added successfully";
 	}
 	
 	public void deleteAnswer(int index) {
@@ -52,11 +45,11 @@ public class AmericanQ extends Question {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[" + getQuestionNumber() + "] American Question: " + getQuestion() + "\n");
+		sb.append(getQuestionNumber() + ") American Question: \n" + getQuestion() + "\n");
 		for (int i = 0; i < Answers.length; i++) {
 			if (Answers[i] != null) {
 				sb.append(" Answer num: [" + (i+1) + "] " + Answers[i].toString());
-				sb.append(" ----> Boolean label: " + Answers[i].IsTrue() + "\n");
+				sb.append(" [Correct or not]: " + Answers[i].IsTrue() + "\n");
 			}
 		}
 		return sb.toString();
@@ -65,29 +58,13 @@ public class AmericanQ extends Question {
 	public String getQuestion() {
 		return question;
 	}
-	
-	public AmericanAnswers getCorrectAnswer() {
-		for (int i = 0; i < Answers.length; i++) {
-			if (Answers[i].IsTrue()) {
-				return Answers[i];
-			}
-		}
-		throw new RuntimeException("No answer is marked as true");
-	}
 
 	public int getAnswersNum() {
 		return answersNum;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		return !(getClass() != obj.getClass());
+	public AmericanAnswers getAnswers(int index) {
+		return Answers[index];
 	}
 
 }
