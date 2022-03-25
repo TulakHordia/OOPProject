@@ -34,6 +34,8 @@ A 'Manager' class to manage all the requests coming from the 'Program' main clas
 'AmericanQ' along with 'OpenQ' classes to store all sub-data of 'Question' class.
 'AmericanAnswers' has all the available answers to the 'AmericanQ' questions.
 
+
+###
 Thank you for using the program.
 Best regards,
 Benjamin Rain. :)
