@@ -1,0 +1,26 @@
+# Object-Oriented Programming - Project.
+Creators Name: Benjamin Rain
+ID: 319520425
+
+* Part 1: Hierarchy, Polymorphism, Object and Exceptions.
+* Part 2: Interfaces, files, generics
+* Part 3: GUI & MVC
+
+* <https://github.com/TulakHordia>
+
+> * [Object-Oriented Programming - Project / github.com/TulakHordia/OOPProject]
+>   * Known Issues
+
+##
+- Cannot take wrong input (i.e. a String when the program requests an int).
+- Cannot print the Exam after it was created, it only prints right after the creation, once.
+- Program only closes after you enter another value if you request choice = 11 in the menu (can literally type anything and it will close afterwards).
+
+
+
+> * I did not encounter any more issues, so if anything pops up I would be happy to know about them.
+
+
+Thank you,
+Best regards,
+Benjamin Rain.
