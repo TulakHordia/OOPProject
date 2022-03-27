@@ -11,10 +11,9 @@ ID: 319520425
 > * [Object-Oriented Programming - Project / github.com/TulakHordia/OOPProject]
 >   * Known Issues
 
-##
-- Cannot take wrong input (i.e. a String when the program requests an int).
-- Cannot print the Exam after it was created, it only prints right after the creation, once.
-- Program only closes after you enter another value if you request choice = 11 in the menu (can literally type anything and it will close afterwards).
+## Known-Bugs
+- Has no ability to print the Exam after it was created, it only prints right after the creation, once.
+- Program only closes after you enter another value if you request 'choice = 11' in the menu (can literally type anything and it will close afterwards).
 
 
 
