@@ -1,6 +1,7 @@
 package id319520425;
 
 import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -9,17 +10,13 @@ public class Manager {
 	private Question[] allQuestions;
 	private int amountOfQuestions;
 	private Question[] manualExamArray;
-	private int manualExamArrayCounter;
 	private int size;
-//	private Question[][] examsArray;
 
 	Scanner input = new Scanner(System.in);
 
 	public Manager() {
 		allQuestions = new Question[1];
-//		examsArray = new Question[10][10];
 		amountOfQuestions = 0;
-		manualExamArrayCounter = 0;
 		size = 0;
 	}
 
@@ -138,8 +135,7 @@ public class Manager {
 		for (int i = 0; i < allQuestions.length; i++) {
 			if (allQuestions[i] != null) {
 				if (allQuestions[i] instanceof AmericanQ) {
-					System.out
-							.println(allQuestions[i].getQuestionNumber() + ") " + allQuestions[i].getQuestion());
+					System.out.println(allQuestions[i].getQuestionNumber() + ") " + allQuestions[i].getQuestion());
 				}
 			}
 		}
@@ -182,17 +178,6 @@ public class Manager {
 		}
 	}
 	
-//	public void printExamsArray() {
-//		System.out.println("These are the existing exams: ");
-//		for (int i = 0; i < examsArray.length; i++) {
-//			for (int j = 0; j < examsArray[i].length; j++) {
-//				if (examsArray[i][j] != null) {
-//					System.out.println("Exam #:" + (i+1) + "\n" + examsArray[i][0]);
-//				}
-//			}
-//		}
-//	}
-
 	public void sortAndPrintAutoExamArray(Question[] array) {
 		Question temp;
 		for (int i = 0; i < array.length; i++) {
@@ -312,7 +297,6 @@ public class Manager {
 				addBuiltInAnswers(ameriQ);
 			}
 		}
-//		addExamToArray(autoExamArray);
 		sortAndPrintAutoExamArray(autoExamArray);
 	}
 
@@ -400,23 +384,53 @@ public class Manager {
 		return false;
 	}
 	
-	//not used so far
-//	public void addExamToArray(Question[] autoExamArray) {
-//		for (int i = 0; i < examsArray.length; i++) {
-//			for (int j = 0; j < autoExamArray.length; j++) {
-//				System.out.println(autoExamArray[j]);
-//				if (examsArray[i][j] == null && autoExamArray[j] != null) {	
-//					examsArray[i][j] = autoExamArray[j];
-//					System.out.println("Added an exam to the exam list.");
-//					break;
-//				}
-//			}
-//		}
-//	}
-
 	public void createManualExamAndSendToPrint(int[] answersArray, int amountOfQuestions) {
 		if (amountOfQuestions == manualExamArray.length) {
 			sortAndPrintManualExamArray(answersArray);
 		}
+	}
+	
+	public void menuEndMessage() {
+		System.out.println("\nDo you want to go back to the main menu? (y/n)");
+
+		char resume = input.next().charAt(0);
+		if(resume=='y'||resume=='Y') {
+		}else
+		{
+			System.out.println("Exiting program...");
+			System.exit(0);
+		}
+	}
+	
+	public int safeNextInt(Scanner e) {
+		int num = 0;
+		boolean invalid = false;
+		do {
+			invalid = false;
+			try {
+				num = e.nextInt();
+			} catch (InputMismatchException exception) {
+				System.out.println("Expected numerical value.");
+				invalid = true;
+			}
+			e.nextLine();
+		} while (invalid);	
+		return num;
+	}
+	
+	public boolean safeNextBoolean(Scanner e) {
+		boolean crembo = false;
+		boolean invalid = false;
+		do {
+			invalid = false;
+			try {
+				crembo = e.nextBoolean();
+			} catch (InputMismatchException exception) {
+				System.out.println("Expected boolean value (true/false).");
+				invalid = true;
+			}
+			e.nextLine();
+		} while (invalid);
+		return crembo;
 	}
 }
