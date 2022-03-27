@@ -117,11 +117,10 @@ public class Program {
 			System.out.println("[5] - Delete an existing answer.");
 			System.out.println("[6] - Create an exam manually.");
 			System.out.println("[7] - Create an exam automatically.");
-
 			System.out.println("[11] - Exit.");
-
 			System.out.println("Enter your choice: ");
-			choice = input.nextInt();
+
+			choice = manage.safeNextInt(input);
 
 			switch (choice) {
 
@@ -132,26 +131,18 @@ public class Program {
 				System.out.println("[2] - Show only American-type questions (With their correct answers).");
 				System.out.println("[3] - Show only Open-type questions.");
 				System.out.println("[4] - Show available questions only.");
-//				System.out.println("[5] - Print all existing exams.");
-
-				int showChoice = input.nextInt();
-				while (showChoice > 0 && showChoice < 5) {
-					if (showChoice == 1) {
-						manage.printEverything();				
-					}
-					if (showChoice == 2) {
-						manage.printAmerican();
-					}
-					if (showChoice == 3) {
-						manage.printOpen();
-					}
-					if (showChoice == 4) {
-						manage.printQuestionsOnly();
-					}
-//					if (showChoice == 5) {
-//						manage.printExamsArray();
-//					}
-					break;
+				int showChoice = manage.safeNextInt(input);
+				if (showChoice == 1) {
+					manage.printEverything();	
+				}
+				if (showChoice == 2) {
+					manage.printAmerican();
+				}
+				if (showChoice == 3) {
+					manage.printOpen();
+				}
+				if (showChoice == 4) {
+					manage.printQuestionsOnly();
 				}
 				break;
 
@@ -160,8 +151,7 @@ public class Program {
 				System.out.println("----Add a question-----");
 				System.out.println("[1] - Add an american-type question.");
 				System.out.println("[2] - Add an open-type question.");
-				int addQuestionChoice = input.nextInt();
-				input.nextLine();
+				int addQuestionChoice = manage.safeNextInt(input);
 				while (addQuestionChoice == 1 || addQuestionChoice == 2) {
 					if (addQuestionChoice == 1) {
 						System.out.println("Please enter your question below: ");
@@ -169,15 +159,13 @@ public class Program {
 						AmericanQ ameriC = new AmericanQ(ameriQuestion);
 						manage.addAmericanQuestion(ameriC);
 						System.out.println("How many answers do you want to add? (2 to 6) ");
-						int answersAmount = input.nextInt();
-						input.nextLine();
+						int answersAmount = manage.safeNextInt(input);
 						for (int i = 0; i < answersAmount; i++) {
 							System.out.println("Please enter answer number " + (i+1) + ": ");
 							String answer = input.nextLine();
 							System.out.println("Is it a correct answer or not? (true/false): ");
-							boolean isTrue = input.nextBoolean();
+							boolean isTrue = manage.safeNextBoolean(input);
 							System.out.println(ameriC.addAnswer(new AmericanAnswers(answer, isTrue)));
-							input.nextLine();
 						}
 						break;
 					}
@@ -200,8 +188,7 @@ public class Program {
 					manage.printQuestionsOnly();
 				}
 				System.out.println("Please choose the question number you want to update: ");
-				int updateChoice = input.nextInt();
-				input.nextLine();
+				int updateChoice = manage.safeNextInt(input);
 				System.out.println("Enter new text below: ");
 				String newQuestion = input.nextLine();
 				System.out.println(manage.updateQuestion(updateChoice, newQuestion));
@@ -211,7 +198,7 @@ public class Program {
 				
 				System.out.println("Would you like to update an American answer or Open answer?");
 				System.out.println("Type 1 for American, 2 for Open.");
-				int updateAnswerChoice = input.nextInt();
+				int updateAnswerChoice =  manage.safeNextInt(input);
 				if (updateAnswerChoice == 1) {
 					System.out.println("See the full list of questions&answers?? y/Y");
 					char newChoice1 = input.next().charAt(0);
@@ -219,12 +206,10 @@ public class Program {
 						manage.printAmerican();
 					}
 					System.out.println("Please select from which question you want to update an answer: ");
-					int questionNum = input.nextInt();
-					input.nextLine();
+					int questionNum = manage.safeNextInt(input);
 					manage.getAmericanAnswer(questionNum);
 					System.out.println("Please select which answer: ");
-					int answerNum = input.nextInt();
-					input.nextLine();
+					int answerNum =  manage.safeNextInt(input);
 					System.out.println("Please enter the new answer: ");
 					String newAnswer = input.nextLine();
 					System.out.println(manage.updateAnswer(questionNum, answerNum, newAnswer));
@@ -236,8 +221,7 @@ public class Program {
 						manage.printOpen();
 					}
 					System.out.println("Please select from which question you want to update an answer: ");
-					int questionNum = input.nextInt();
-					input.nextLine();
+					int questionNum =  manage.safeNextInt(input);
 					System.out.println("Please enter the new answer: ");
 					String newAnswer = input.nextLine();
 					System.out.println(manage.updateAnswer(questionNum, questionNum, newAnswer));
@@ -253,40 +237,34 @@ public class Program {
 					manage.printQuestionsOnly();
 				}
 				System.out.println("Please select from which question you want to delete an answer: ");
-				int questionNum1 = input.nextInt();
-				input.nextLine();
+				int questionNum1 =  manage.safeNextInt(input);
 				while (!manage.checkInstanceOfQuestion(questionNum1)) {
 					System.out.println("Cannot delete from an Open Question, select a different one: ");
-					questionNum1 = input.nextInt();
-					input.nextLine();
+					questionNum1 =  manage.safeNextInt(input);
 				}
 				manage.getAmericanAnswer(questionNum1);
 				System.out.println("Please select which answer: ");
-				int answerNum1 = input.nextInt();
-				input.nextLine();
+				int answerNum1 =  manage.safeNextInt(input);
 				System.out.println(manage.deleteAnswer(questionNum1, answerNum1));
 				break;
 				
 			case 6:
 				
 				System.out.println("How many questions do you want in your exam? ");
-				int amountOfQuestions = input.nextInt();
-				input.nextLine();
+				int amountOfQuestions =  manage.safeNextInt(input);
 				manage.setSize(amountOfQuestions);
 				manage.printQuestionsOnly();
 				int answersAmount = 0;
 				int[] answersArray = new int[0];
 				System.out.println("Please choose the question you wish to add: ");
 				for (int i = 0; i < amountOfQuestions; i++) {
-					int questionNum = input.nextInt();
-					input.nextLine();
+					int questionNum =  manage.safeNextInt(input);
 						if (!manage.checkInstanceOfQuestion(questionNum)) {
 							manage.addQuestionToManualExam(questionNum, null);
 						}
 						else {
 							System.out.println("Please choose the amount of answers you want for the question: ");
-							answersAmount = input.nextInt();
-							input.nextLine();
+							answersAmount =  manage.safeNextInt(input);
 							answersArray = new int[answersAmount];
 							System.out.println("These are the answers:");
 							char newChoice3 = input.next().charAt(0);
@@ -295,7 +273,7 @@ public class Program {
 							}
 							System.out.println("Please select the answers you want: ");
 							for (int j = 0; j < answersArray.length; j++) {
-								answersArray[j] = input.nextInt();	
+								answersArray[j] =  manage.safeNextInt(input);	
 							}
 							manage.addQuestionToManualExam(questionNum, answersArray);
 						}
@@ -307,12 +285,10 @@ public class Program {
 				
 				System.out.println("How many questions would you like in your exam? ");
 				System.out.println("There are only: " + manage.checkAllQuestionsLength() + " Questions available.");
-				int questAmount = input.nextInt();
-				input.nextLine();
+				int questAmount =  manage.safeNextInt(input);
 				if (questAmount < 0 || questAmount > manage.checkAllQuestionsLength()) {
 					System.out.println("Invalid amount of question, please select again: ");
-					questAmount = input.nextInt();
-					input.nextLine();
+					questAmount =  manage.safeNextInt(input);
 				}
 				manage.autoCreateExam(questAmount);
 				break;
@@ -320,17 +296,9 @@ public class Program {
 			default:
 				System.out.println("Invalid option, please choose again.");
 			}
-			System.out.println("\nDo you want to go back to the main menu? (y/n)");
-
-			char resume = input.next().charAt(0);
-			if(resume=='y'||resume=='Y') {
-			}else
-			{
-				System.out.println("Exiting program...");
-				System.exit(0);
-			}
+			manage.menuEndMessage();
 		}
-		while(choice!=11);
+		while(choice != 11);
 		System.out.println("Exiting program...Thank you!");
 		input.close();
 		}
