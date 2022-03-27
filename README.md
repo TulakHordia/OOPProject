@@ -34,6 +34,11 @@ A 'Manager' class to manage all the requests coming from the 'Program' main clas
 'AmericanQ' along with 'OpenQ' classes to store all sub-data of 'Question' class.
 'AmericanAnswers' has all the available answers to the 'AmericanQ' questions.
 
+## Work to be done
+'What work needs to be done in order to add multiple-subjects into the code?'
+Basically I only need to add a new 'Class' for each subject so I can add the question-objects into the relevant subject class type.
+
+
 
 ### Thank you for using the program.
 ### Best regards,
