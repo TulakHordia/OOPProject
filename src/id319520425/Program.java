@@ -266,11 +266,8 @@ public class Program {
 							System.out.println("Please choose the amount of answers you want for the question: ");
 							answersAmount =  manage.safeNextInt(input);
 							answersArray = new int[answersAmount];
-							System.out.println("These are the answers:");
-							char newChoice3 = input.next().charAt(0);
-							if (newChoice3 == 'y' || newChoice3 == 'Y') {
-								manage.getAmericanAnswer(questionNum);
-							}
+							System.out.println("These are the answers for question #"+questionNum);
+							manage.getAmericanAnswer(questionNum);
 							System.out.println("Please select the answers you want: ");
 							for (int j = 0; j < answersArray.length; j++) {
 								answersArray[j] =  manage.safeNextInt(input);	
