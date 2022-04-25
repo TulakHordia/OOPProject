@@ -1,55 +1,50 @@
 package id319520425;
 
-public class AmericanQ extends Question {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class AmericanQ extends Question implements Serializable {
 
 	public static final int MAX_ANS = 10;
-	private AmericanAnswers[] Answers;
+	ArrayList<AmericanAnswers> Answers = new ArrayList<AmericanAnswers>();
 	private int answersNum;
 	
 	public AmericanQ(String question) {
 		super(question);
-		Answers = new AmericanAnswers[MAX_ANS];
 		answersNum = 0;
 	}
 	
-	public String addAnswer(AmericanAnswers answer) {
-		if (answersNum == MAX_ANS) {
-			return "The list is full";
-		}
+	public String addAnswer(AmericanAnswers answer) {		
 		for (int i = 0; i <= answersNum; i++) {
-			if (Answers[i] != null) {
-				if (Answers[i].getAnswer().equals(answer.getAnswer())) {
-					return "Answer already exists";
-				}
-			}
-		}
-		for (int i = 0; i < Answers.length; i++) {
-			if (Answers[i] == null) {
-				Answers[i] = answer;
-				break;
+			if (Answers.contains(answer)) { // Need to change it to a Set method
+				return "Answer already exists";
 			}
 		}
 		answersNum++;
+		if (answersNum >= Answers.size()) {
+			Answers.add(answersNum-1, answer);
+		}
 		return "Answer added successfully";
 	}
 	
 	public void deleteAnswer(int index) {
-		Answers[index-1] = null;
+		Answers.set((index-1), null);
 		answersNum--;
 	}
 	
 	public void updateAnswer(int index, String answer) {
-		Answers[index-1].setAnswer(answer);
+		Answers.get(index-1).setAnswer(answer);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getQuestionNumber() + ") American Question: \n" + getQuestion() + "\n");
-		for (int i = 0; i < Answers.length; i++) {
-			if (Answers[i] != null) {
-				sb.append(" Answer num: [" + (i+1) + "] " + Answers[i].toString());
-				sb.append(" [Correct or not]: " + Answers[i].IsTrue() + "\n");
+		for (int i = 0; i < Answers.size(); i++) {
+			if (Answers.get(i) != null) {
+				sb.append(" Answer num: [" + (i+1) + "] " + Answers.get(i).toString());
+				sb.append(" [Correct or not]: " + Answers.get(i).IsTrue() + "\n");
 			}
 		}
 		return sb.toString();
@@ -64,7 +59,7 @@ public class AmericanQ extends Question {
 	}
 	
 	public AmericanAnswers getAnswers(int index) {
-		return Answers[index];
+		return Answers.get(index);
 	}
 
 }
