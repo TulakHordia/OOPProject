@@ -1,6 +1,9 @@
 package id319520425;
 
-public abstract class Question {
+import java.io.Serializable;
+import java.util.Comparator;
+
+public abstract class Question implements Serializable {
 	
 	private static int questionNumCounter = 1;
 	private int questionNumber;
@@ -32,4 +35,5 @@ public abstract class Question {
 	public String toString() {
 		return question + "\n";
 	}
+	
 }
