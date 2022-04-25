@@ -282,27 +282,21 @@ public class Manager {
 			outFile.writeObject(allQuestions.get(i));
 		}
 		outFile.close();
-		System.out.println("Saved to: questions.ser ");
+		System.out.println("Saved to: questions.ser");
 	}
 	
 	public void readFromBinaryFile(String fileName) throws IOException, FileNotFoundException, ClassNotFoundException {
-		ObjectInputStream inFile = new ObjectInputStream(new FileInputStream(fileName));
-		try {
+		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream(fileName))){
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
 			}
 		} catch (EOFException e) {
-			System.out.println("EOF Reached for: " + fileName);
-			e.getMessage();
-			e.printStackTrace();
+			System.out.println("Imported data.");
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + fileName + " does not exist in the directory.");
 			e.getMessage();
 			e.printStackTrace();
-		} finally {
-			inFile.close();
-		}
-		
+		} 
 	}
 
 	public void sortByAnswerLength(ArrayList<Question> manualExamArrayInput) {
