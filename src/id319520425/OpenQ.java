@@ -1,6 +1,8 @@
 package id319520425;
 
-public class OpenQ extends Question {
+import java.io.Serializable;
+
+public class OpenQ extends Question implements Serializable {
 	
 	private String answer;
 	
