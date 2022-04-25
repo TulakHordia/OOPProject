@@ -1,6 +1,8 @@
 package id319520425;
 
-public class AmericanAnswers {
+import java.io.Serializable;
+
+public class AmericanAnswers implements Serializable {
 
 	private boolean isTrue;
 	private String answer;
