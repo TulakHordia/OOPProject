@@ -1,107 +1,110 @@
 package id319520425;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class Program {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
 		Manager manage = new Manager();
 		
-		//General questions
-		String quest1 = "First question";
-		String quest2 = "Second question";
-		String quest3 = "Third question";
-		String quest4 = "Fourth question";
-		String quest5 = "Fifth question";
-		String quest6 = "Sixth question";
-		String quest7 = "Seventh question";
-		String quest8 = "Eighth question";
-		
-		//Just answers
-		String ans1 = "First answer";
-		String ans2 = "Second answer";
-		String ans3 = "Another answer";
-		String ans4 = "And another one";
-		String ans5 = "Fifth answer";
-		String ans6 = "Sixth answer";
-		String ans7 = "Seventh answer";
-		String ans8 = "Eighth answer";
-		
-		//False answers
-		String ansF1 = "False answer #1";
-		String ansF2 = "False answer #2";
-		String ansF3 = "False answer #3";
-		String ansF4 = "False answer #4";
-		String ansF5 = "False answer #5";
-		
-		//Open answers
-		String openAns = "First open answer";
-		String openAns2 = "Second open answer";
-		String openAns3 = "Third open answer";
-		String openAns4 = "Fourth open answer";
-		
-		//Create new american question objects
-		AmericanQ ameriTest1 = new AmericanQ(quest1);
-		AmericanQ ameriTest2 = new AmericanQ(quest2);
-		AmericanQ ameriTest3 = new AmericanQ(quest3);
-		AmericanQ ameriTest4 = new AmericanQ(quest4);
-		
-		//Add american questions
-		manage.addAmericanQuestion(ameriTest1);
-		manage.addAmericanQuestion(ameriTest2);
-		manage.addAmericanQuestion(ameriTest3);
-		manage.addAmericanQuestion(ameriTest4);
-		
-		//American answers
-		AmericanAnswers ameriAns = new AmericanAnswers(ans1, true);
-		AmericanAnswers ameriAns2 = new AmericanAnswers(ans2, true);
-		AmericanAnswers ameriAns3 = new AmericanAnswers(ans3, true);
-		AmericanAnswers ameriAns4 = new AmericanAnswers(ans4, true);
-		AmericanAnswers ameriAns5 = new AmericanAnswers(ans5, true);
-		AmericanAnswers ameriAns6 = new AmericanAnswers(ans6, true);
-		AmericanAnswers ameriAns7 = new AmericanAnswers(ans7, true);
-		AmericanAnswers ameriAns8 = new AmericanAnswers(ans8, true);
-		AmericanAnswers ameriAnsF1 = new AmericanAnswers(ansF1, false);
-		AmericanAnswers ameriAnsF2 = new AmericanAnswers(ansF2, false);
-		AmericanAnswers ameriAnsF3 = new AmericanAnswers(ansF3, false);
-		AmericanAnswers ameriAnsF4 = new AmericanAnswers(ansF4, false);
-		AmericanAnswers ameriAnsF5 = new AmericanAnswers(ansF5, false);
-		
-		//More than one is correct:
-		ameriTest1.addAnswer(ameriAns);
-		ameriTest1.addAnswer(ameriAns2);
-		ameriTest1.addAnswer(ameriAns3);
-		ameriTest1.addAnswer(ameriAns4);
-		ameriTest1.addAnswer(ameriAnsF1);
-		ameriTest1.addAnswer(ameriAnsF4);
-		
-		//All false
-		ameriTest2.addAnswer(ameriAnsF1);
-		ameriTest2.addAnswer(ameriAnsF2);
-		ameriTest2.addAnswer(ameriAnsF3);
-		ameriTest2.addAnswer(ameriAnsF4);
-		ameriTest2.addAnswer(ameriAnsF5);
-		
-		//Only one question is true
-		ameriTest3.addAnswer(ameriAns5);
-		ameriTest3.addAnswer(ameriAnsF1);
-		ameriTest3.addAnswer(ameriAnsF2);
-		ameriTest3.addAnswer(ameriAnsF3);
-		ameriTest3.addAnswer(ameriAnsF4);
-		
-		//more than one is correct #2
-		ameriTest4.addAnswer(ameriAns6);
-		ameriTest4.addAnswer(ameriAns7);
-		ameriTest4.addAnswer(ameriAns8);
-		ameriTest4.addAnswer(ameriAnsF3);
-		ameriTest4.addAnswer(ameriAnsF4);
-
-		//Open questions + Answers
-		manage.addOpenQuestions(quest5, openAns);
-		manage.addOpenQuestions(quest6, openAns2);
-		manage.addOpenQuestions(quest7, openAns3);
-		manage.addOpenQuestions(quest8, openAns4);
+//		//General questions
+//		String quest1 = "First question";
+//		String quest2 = "Second question";
+//		String quest3 = "Third question";
+//		String quest4 = "Fourth question";
+//		String quest5 = "Fifth question";
+//		String quest6 = "Sixth question";
+//		String quest7 = "Seventh question";
+//		String quest8 = "Eighth question";
+//		
+//		//Just answers
+//		String ans1 = "First answer";
+//		String ans2 = "Second answer";
+//		String ans3 = "Another answer";
+//		String ans4 = "And another one";
+//		String ans5 = "Fifth answer";
+//		String ans6 = "Sixth answer";
+//		String ans7 = "Seventh answer";
+//		String ans8 = "Eighth answer";
+//		
+//		//False answers
+//		String ansF1 = "False answer #1";
+//		String ansF2 = "False answer #2";
+//		String ansF3 = "False answer #3";
+//		String ansF4 = "False answer #4";
+//		String ansF5 = "False answer #5";
+//		
+//		//Open answers
+//		String openAns = "First open answer";
+//		String openAns2 = "Second open answer has many characters aswell";
+//		String openAns3 = "Third open answer is a very very very very very very very long one";
+//		String openAns4 = "Fourth open answer is pretty short";
+//		
+//		//Create new american question objects
+//		AmericanQ ameriTest1 = new AmericanQ(quest1);
+//		AmericanQ ameriTest2 = new AmericanQ(quest2);
+//		AmericanQ ameriTest3 = new AmericanQ(quest3);
+//		AmericanQ ameriTest4 = new AmericanQ(quest4);
+//		
+//		//Add american questions
+//		manage.addAmericanQuestion(ameriTest1);
+//		manage.addAmericanQuestion(ameriTest2);
+//		manage.addAmericanQuestion(ameriTest3);
+//		manage.addAmericanQuestion(ameriTest4);
+//		
+//		//American answers
+//		AmericanAnswers ameriAns = new AmericanAnswers(ans1, true);
+//		AmericanAnswers ameriAns2 = new AmericanAnswers(ans2, true);
+//		AmericanAnswers ameriAns3 = new AmericanAnswers(ans3, true);
+//		AmericanAnswers ameriAns4 = new AmericanAnswers(ans4, true);
+//		AmericanAnswers ameriAns5 = new AmericanAnswers(ans5, true);
+//		AmericanAnswers ameriAns6 = new AmericanAnswers(ans6, true);
+//		AmericanAnswers ameriAns7 = new AmericanAnswers(ans7, true);
+//		AmericanAnswers ameriAns8 = new AmericanAnswers(ans8, true);
+//		AmericanAnswers ameriAnsF1 = new AmericanAnswers(ansF1, false);
+//		AmericanAnswers ameriAnsF2 = new AmericanAnswers(ansF2, false);
+//		AmericanAnswers ameriAnsF3 = new AmericanAnswers(ansF3, false);
+//		AmericanAnswers ameriAnsF4 = new AmericanAnswers(ansF4, false);
+//		AmericanAnswers ameriAnsF5 = new AmericanAnswers(ansF5, false);
+//		
+//		//More than one is correct:
+//		ameriTest1.addAnswer(ameriAns);
+//		ameriTest1.addAnswer(ameriAns2);
+//		ameriTest1.addAnswer(ameriAns3);
+//		ameriTest1.addAnswer(ameriAns4);
+//		ameriTest1.addAnswer(ameriAnsF1);
+//		ameriTest1.addAnswer(ameriAnsF4);
+//		
+//		//All false
+//		ameriTest2.addAnswer(ameriAnsF1);
+//		ameriTest2.addAnswer(ameriAnsF2);
+//		ameriTest2.addAnswer(ameriAnsF3);
+//		ameriTest2.addAnswer(ameriAnsF4);
+//		ameriTest2.addAnswer(ameriAnsF5);
+//		
+//		//Only one question is true
+//		ameriTest3.addAnswer(ameriAns5);
+//		ameriTest3.addAnswer(ameriAnsF1);
+//		ameriTest3.addAnswer(ameriAnsF2);
+//		ameriTest3.addAnswer(ameriAnsF3);
+//		ameriTest3.addAnswer(ameriAnsF4);
+//		
+//		//more than one is correct #2
+//		ameriTest4.addAnswer(ameriAns6);
+//		ameriTest4.addAnswer(ameriAns7);
+//		ameriTest4.addAnswer(ameriAns8);
+//		ameriTest4.addAnswer(ameriAnsF3);
+//		ameriTest4.addAnswer(ameriAnsF4);
+//
+//		//Open questions + Answers
+//		manage.addOpenQuestions(quest5, openAns);
+//		manage.addOpenQuestions(quest6, openAns2);
+//		manage.addOpenQuestions(quest7, openAns3);
+//		manage.addOpenQuestions(quest8, openAns4);
 		
 		Scanner input = new Scanner(System.in);
 		int choice = 0;
@@ -117,7 +120,11 @@ public class Program {
 			System.out.println("[5] - Delete an existing answer.");
 			System.out.println("[6] - Create an exam manually.");
 			System.out.println("[7] - Create an exam automatically.");
-			System.out.println("[11] - Exit.");
+			System.out.println("[8] - Read from a file. (WIP)");
+			System.out.println("[9] - Import binary data from a file.");
+			System.out.println("[10] - Save all Questions&Answers.");
+			System.out.println("[11] - Create a copy of an existing exam.");
+			System.out.println("[12] - Save and exit program. (Saving to a binary file)");
 			System.out.println("Enter your choice: ");
 
 			choice = manage.safeNextInt(input);
@@ -167,6 +174,7 @@ public class Program {
 							boolean isTrue = manage.safeNextBoolean(input);
 							System.out.println(ameriC.addAnswer(new AmericanAnswers(answer, isTrue)));
 						}
+						manage.addBuiltInAnswers(ameriC);
 						break;
 					}
 					else if (addQuestionChoice == 2) {
@@ -255,7 +263,7 @@ public class Program {
 				manage.setSize(amountOfQuestions);
 				manage.printQuestionsOnly();
 				int answersAmount = 0;
-				int[] answersArray = new int[0];
+				ArrayList<Integer> answersArray = new ArrayList<>();
 				System.out.println("Please choose the question you wish to add: ");
 				for (int i = 0; i < amountOfQuestions; i++) {
 					int questionNum =  manage.safeNextInt(input);
@@ -265,17 +273,17 @@ public class Program {
 						else {
 							System.out.println("Please choose the amount of answers you want for the question: ");
 							answersAmount =  manage.safeNextInt(input);
-							answersArray = new int[answersAmount];
+							answersArray = new ArrayList<>(Collections.nCopies(answersAmount, 0));
 							System.out.println("These are the answers for question #"+questionNum);
 							manage.getAmericanAnswer(questionNum);
 							System.out.println("Please select the answers you want: ");
-							for (int j = 0; j < answersArray.length; j++) {
-								answersArray[j] =  manage.safeNextInt(input);	
+							for (Integer j : answersArray) {
+								answersArray.set(j, manage.safeNextInt(input));
 							}
 							manage.addQuestionToManualExam(questionNum, answersArray);
 						}
 				}
-				manage.createManualExamAndSendToPrint(answersArray, amountOfQuestions);
+				manage.sortAndPrintManualExamArray();
 				break;
 				
 			case 7:
@@ -290,12 +298,55 @@ public class Program {
 				manage.autoCreateExam(questAmount);
 				break;
 				
+			case 8:
+				
+				manage.readFile();
+				break;
+				
+			case 9:
+				
+				System.out.println("Please enter the name of the file you want to import: ");
+				System.out.println("--Make sure the name ends with the correct ending (Ex - .txt, .dat, .ser)--");
+				String fileName = input.nextLine();
+				manage.readFromBinaryFile(fileName);
+				break;
+				
+			case 10:
+				
+				System.out.println("Please enter the name of the file you wish to save to: ");
+				System.out.println("--Make sure the name ends with the correct ending (Ex - .txt, .dat, .ser)--");
+				String fileName2 = input.nextLine();
+				manage.writeAllExternally(fileName2);
+				break;
+				
+			case 11:
+				
+				// Copy an existing exam.		
+				
+			case 12:
+				
+				manage.saveToBinaryFile();
+				System.out.println("Saving and exiting...");
+				System.exit(0);
+				break;
+
+				
 			default:
 				System.out.println("Invalid option, please choose again.");
 			}
-			manage.menuEndMessage();
+			System.out.println("\nDo you want to go back to the main menu? (y/n)");
+
+			char resume = input.next().charAt(0);
+			if(resume=='y'||resume=='Y') {
+			}else
+			{
+				manage.saveToBinaryFile();
+				System.out.println("Exiting program...");
+				System.exit(0);
+			}
 		}
-		while(choice != 11);
+		while(choice != 12);
+		manage.saveToBinaryFile();
 		System.out.println("Exiting program...Thank you!");
 		input.close();
 		}
