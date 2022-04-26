@@ -305,9 +305,15 @@ public class Manager {
 			}
 		} catch (EOFException e) {
 			System.out.println("Automatically Imported data from questions.ser");
-		} 
-		Question quest = getQuestionById(allQuestions.size()-1);
-		quest.setQuestionNumber(allQuestions);
+		}
+		
+		for (int i = 0; i < allQuestions.size(); i++) {
+			Question quest = getQuestionById(i);
+			if (quest != null) {
+				quest.setQuestionNumber(allQuestions);
+				break;
+			}
+		}
 	}
 	
 	public void showAllExistingExamsInDirectory() {
@@ -338,7 +344,7 @@ public class Manager {
 		FileWriter output = new FileWriter("Exams/"+"copy_of_"+allExistingExams.get(copyChoice-1).getName());
 		String count;
 		while ( (count = inputS.readLine()) != null ) {
-			output.write(count);
+			output.write(count+"\n");
 		}
 		System.out.println("Created a copy of: " + allExistingExams.get(copyChoice-1).getName());
 		output.flush();
@@ -587,6 +593,7 @@ public class Manager {
 	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");  
 	    return df.format(new Date());  
 	}
+	
 
 	public void sortAllQuestions() {
 		QuestionComparator qC = new QuestionComparator();
