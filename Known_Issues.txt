@@ -12,10 +12,7 @@ ID: 319520425
 >   * Known Issues
 
 ## Known-Bugs
-- Has no ability to print the Exam after it was created, it only prints right after the creation, once.
-- Program only closes after you enter another value if you request 'choice = 11' in the menu (can literally type anything and it will close afterwards).
-
-
+- None known.
 
 > * I did not encounter any more issues, so if anything pops up I would be happy to know about them.
 
