@@ -2,7 +2,6 @@ package id319520425;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class AmericanQ extends Question implements Serializable {
 
