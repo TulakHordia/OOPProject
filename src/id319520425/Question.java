@@ -1,7 +1,7 @@
 package id319520425;
 
 import java.io.Serializable;
-import java.util.Comparator;
+import java.util.ArrayList;
 
 public abstract class Question implements Serializable {
 	
@@ -12,11 +12,14 @@ public abstract class Question implements Serializable {
 	public Question(String question) {
 		this.question = question;
 		questionNumber = questionNumCounter++;
-		
 	}
 
 	public int getQuestionNumber() {
 		return questionNumber;
+	}
+	
+	public void setQuestionNumber(ArrayList<Question> allQuestions) {
+		questionNumCounter = (allQuestions.size()+1);
 	}
 	
 	public String getQuestion() {
