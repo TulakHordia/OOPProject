@@ -33,13 +33,13 @@ Can sort the questions list by answer length.
 Export exams into .txt files or .ser files.
 Import .ser files.
 
-Contains a 'Program' main class to request user input for the various options and implemented methods from 'ProgramMethods'.
-A 'Manager' class to manage all the requests coming from the 'Program' main class.
-'Question' abstract class to contain all the data & info regarding the questions.
-'AmericanQ' along with 'OpenQ' classes to store all sub-data of 'Question' class.
-'AmericanAnswers' has all the available answers to the 'AmericanQ' questions.
-'QuestionComparator' sorts the requested array by the total answer length.
-'ProgramMethods' is an interface used to hand-out methods for the 'Program' class.
+* Contains a 'Program' main class to request user input for the various options and implemented methods from 'ProgramMethods'.
+* A 'Manager' class to manage all the requests coming from the 'Program' main class.
+* 'Question' abstract class to contain all the data & info regarding the questions.
+* 'AmericanQ' along with 'OpenQ' classes to store all sub-data of 'Question' class.
+* 'AmericanAnswers' has all the available answers to the 'AmericanQ' questions.
+* 'QuestionComparator' sorts the requested array by the total answer length.
+* 'ProgramMethods' is an interface used to hand-out methods for the 'Program' class.
 
 ## Work to be done
 'What work needs to be done in order to add multiple-subjects into the code?'
