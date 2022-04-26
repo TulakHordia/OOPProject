@@ -10,6 +10,7 @@ public class Program {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
 		Manager manage = new Manager();
+		manage.autoImportOnLaunch();
 		
 //		//General questions
 //		String quest1 = "First question";
@@ -78,6 +79,7 @@ public class Program {
 //		ameriTest1.addAnswer(ameriAns4);
 //		ameriTest1.addAnswer(ameriAnsF1);
 //		ameriTest1.addAnswer(ameriAnsF4);
+//		manage.addBuiltInAnswers(ameriTest1);
 //		
 //		//All false
 //		ameriTest2.addAnswer(ameriAnsF1);
@@ -85,6 +87,7 @@ public class Program {
 //		ameriTest2.addAnswer(ameriAnsF3);
 //		ameriTest2.addAnswer(ameriAnsF4);
 //		ameriTest2.addAnswer(ameriAnsF5);
+//		manage.addBuiltInAnswers(ameriTest2);
 //		
 //		//Only one question is true
 //		ameriTest3.addAnswer(ameriAns5);
@@ -92,6 +95,7 @@ public class Program {
 //		ameriTest3.addAnswer(ameriAnsF2);
 //		ameriTest3.addAnswer(ameriAnsF3);
 //		ameriTest3.addAnswer(ameriAnsF4);
+//		manage.addBuiltInAnswers(ameriTest3);
 //		
 //		//more than one is correct #2
 //		ameriTest4.addAnswer(ameriAns6);
@@ -99,6 +103,7 @@ public class Program {
 //		ameriTest4.addAnswer(ameriAns8);
 //		ameriTest4.addAnswer(ameriAnsF3);
 //		ameriTest4.addAnswer(ameriAnsF4);
+//		manage.addBuiltInAnswers(ameriTest4);
 //
 //		//Open questions + Answers
 //		manage.addOpenQuestions(quest5, openAns);
@@ -111,8 +116,8 @@ public class Program {
 
 		do {
 
-			System.out.println("--------Exam creator--------");
-			System.out.println("-----Select option:-----");
+			System.out.println("\n--------Exam creator--------");
+			System.out.println("--------Select option:--------\n");
 			System.out.println("[1] - Show all questions/answers that exist.");
 			System.out.println("[2] - Add a new question/answer.");
 			System.out.println("[3] - Update an existing question.");
@@ -120,12 +125,12 @@ public class Program {
 			System.out.println("[5] - Delete an existing answer.");
 			System.out.println("[6] - Create an exam manually.");
 			System.out.println("[7] - Create an exam automatically.");
-			System.out.println("[8] - Read from a file. (WIP)");
+			System.out.println("[8] - Sort all the questions by answer length.");
 			System.out.println("[9] - Import binary data from a file.");
-			System.out.println("[10] - Save all Questions&Answers.");
+			System.out.println("[10] - Save all Questions&Answers into a .txt file.");
 			System.out.println("[11] - Create a copy of an existing exam.");
 			System.out.println("[12] - Save and exit program. (Saving to a binary file)");
-			System.out.println("Enter your choice: ");
+			System.out.println("\nEnter your choice: ");
 
 			choice = manage.safeNextInt(input);
 
@@ -241,8 +246,9 @@ public class Program {
 				System.out.println("See the full list of questions&answers? y/Y");
 				char newChoice2 = input.next().charAt(0);
 				if (newChoice2 == 'y' || newChoice2 == 'Y') {
-					System.out.println("Can only delete from American-type questions.");
-					manage.printQuestionsOnly();
+					System.out.println("Please note");
+					System.out.println("You can only delete from American-type questions.");
+					manage.printAmericanQuestionsOnly();
 				}
 				System.out.println("Please select from which question you want to delete an answer: ");
 				int questionNum1 =  manage.safeNextInt(input);
@@ -300,7 +306,7 @@ public class Program {
 				
 			case 8:
 				
-				manage.readFile();
+				manage.sortAllQuestions();
 				break;
 				
 			case 9:
@@ -321,6 +327,12 @@ public class Program {
 				
 			case 11:
 				
+				System.out.println("All existing exams: ");
+				manage.showAllExistingExamsInDirectory();
+				System.out.println("Please choose which one you wish to copy: ");
+				int copyChoice = manage.safeNextInt(input);
+				manage.copyExistingExam(copyChoice);
+				break;
 				// Copy an existing exam.		
 				
 			case 12:
