@@ -2,8 +2,8 @@
 Creators Name: Benjamin Rain
 ID: 319520425
 
-* Part 1: Hierarchy, Polymorphism, Object and Exceptions.
-* Part 2: Interfaces, files, generics
+* Part 1: Hierarchy, Polymorphism, Object and Exceptions. [Done]
+* Part 2: Interfaces, files, generics [Done]
 * Part 3: GUI & MVC
 
 * <https://github.com/TulakHordia>
