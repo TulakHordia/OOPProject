@@ -222,6 +222,11 @@ public class Program implements ProgramMethods {
 				
 			case 12:
 				
+				questionsList();
+				break;
+				
+			case 13:
+				
 				manage.saveToBinaryFile();
 				System.out.println("Saving and exiting...");
 				System.exit(0);
@@ -241,7 +246,7 @@ public class Program implements ProgramMethods {
 				System.exit(0);
 			}
 		}
-		while(choice != 12);
+		while(choice != 13);
 		manage.saveToBinaryFile();
 		System.out.println("Exiting program...Thank you!");
 		input.close();
@@ -409,7 +414,9 @@ public class Program implements ProgramMethods {
 		System.out.println("[9] - Import binary data from a file.");
 		System.out.println("[10] - Save all Questions&Answers into a .txt file.");
 		System.out.println("[11] - Create a copy of an existing exam.");
-		System.out.println("[12] - Save and exit program. (Saving to a binary file)");
+		System.out.println("[12] - Import Pre-made 'questions list'.");
+		System.out.println("[13] - Save and exit program. (Saving to a binary file)");
+		
 		System.out.println("\nEnter your choice: ");
 	}
 }

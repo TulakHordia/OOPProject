@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -207,7 +209,7 @@ public class Manager {
 	}
 	
 	public void write(String filename, ArrayList<Question> theExamArray) throws IOException {
-		
+		Files.createDirectories(Paths.get("Exams/"));
 		FileWriter fwQ = new FileWriter("Exams/"+"exam_"+examNum+"_"+filename+"_questions.txt");
 		FileWriter fwA = new FileWriter("Exams/"+"exam_"+examNum+"_"+filename+"_solution.txt");
 		examNum++;
@@ -245,7 +247,7 @@ public class Manager {
 	}
 	
 	public void writeAllExternally(String fileName) throws IOException {
-		
+		Files.createDirectories(Paths.get("Exams/"));
 		boolean check = new File(fileName).exists();
 		
 		if (!check) {
@@ -276,6 +278,7 @@ public class Manager {
 
 	
 	public void saveToBinaryFile() throws IOException, FileNotFoundException {
+		Files.createDirectories(Paths.get("Exams/"));
 		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("Exams/questions.ser"));
 		for (int i = 0; i < allQuestions.size(); i++) {
 			outFile.writeObject(allQuestions.get(i));
@@ -299,12 +302,16 @@ public class Manager {
 	}
 	
 	public void autoImportOnLaunch() throws ClassNotFoundException, IOException {
+		Files.createDirectories(Paths.get("Exams/"));
 		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Exams/questions.ser"))){
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
 			}
 		} catch (EOFException e) {
 			System.out.println("Automatically Imported data from questions.ser");
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+			System.out.println("Please import questions list. (Option 12)");
 		}
 		
 		for (int i = 0; i < allQuestions.size(); i++) {
