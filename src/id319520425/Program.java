@@ -223,6 +223,7 @@ public class Program implements ProgramMethods {
 			case 12:
 				
 				questionsList();
+				manage.saveToBinaryFile();
 				break;
 				
 			case 13:
