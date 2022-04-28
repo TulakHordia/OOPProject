@@ -6,7 +6,8 @@ import java.util.ArrayList;
 public class AmericanQ extends Question implements Serializable {
 
 	public static final int MAX_ANS = 10;
-	ArrayList<AmericanAnswers> Answers = new ArrayList<AmericanAnswers>();
+//	ArrayList<AmericanAnswers> Answers = new ArrayList<AmericanAnswers>();
+	NewSet<AmericanAnswers> Answers = new NewSet<AmericanAnswers>();
 	private int answersNum;
 	
 	public AmericanQ(String question) {
@@ -16,7 +17,7 @@ public class AmericanQ extends Question implements Serializable {
 	
 	public String addAnswer(AmericanAnswers answer) {		
 		for (int i = 0; i <= answersNum; i++) {
-			if (Answers.contains(answer)) { // Need to change it to a Set method
+			if (Answers.contains(answer)) {
 				return "Answer already exists";
 			}
 		}

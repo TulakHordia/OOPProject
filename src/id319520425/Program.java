@@ -226,7 +226,6 @@ public class Program implements ProgramMethods {
 				System.out.println("Saving and exiting...");
 				System.exit(0);
 				break;
-
 				
 			default:
 				System.out.println("Invalid option, please choose again.");
@@ -348,6 +347,7 @@ public class Program implements ProgramMethods {
 		ameriTest1.addAnswer(ameriAns4);
 		ameriTest1.addAnswer(ameriAnsF1);
 		ameriTest1.addAnswer(ameriAnsF4);
+		manage.addBuiltInAnswers(ameriTest1);
 		
 		//All false
 		ameriTest2.addAnswer(ameriAnsF1);
@@ -355,6 +355,7 @@ public class Program implements ProgramMethods {
 		ameriTest2.addAnswer(ameriAnsF3);
 		ameriTest2.addAnswer(ameriAnsF4);
 		ameriTest2.addAnswer(ameriAnsF5);
+		manage.addBuiltInAnswers(ameriTest2);
 		
 		//Only one question is true
 		ameriTest3.addAnswer(ameriAns5);
@@ -362,6 +363,7 @@ public class Program implements ProgramMethods {
 		ameriTest3.addAnswer(ameriAnsF2);
 		ameriTest3.addAnswer(ameriAnsF3);
 		ameriTest3.addAnswer(ameriAnsF4);
+		manage.addBuiltInAnswers(ameriTest3);
 		
 		//more than one is correct #2
 		ameriTest4.addAnswer(ameriAns6);
@@ -369,7 +371,8 @@ public class Program implements ProgramMethods {
 		ameriTest4.addAnswer(ameriAns8);
 		ameriTest4.addAnswer(ameriAnsF3);
 		ameriTest4.addAnswer(ameriAnsF4);
-
+		manage.addBuiltInAnswers(ameriTest4);
+		
 		//Open questions + Answers
 		manage.addOpenQuestions(quest5, openAns);
 		manage.addOpenQuestions(quest6, openAns2);
