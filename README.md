@@ -22,7 +22,10 @@ A program used to create and edit exams, managing specific questions and answers
 Create and export exams, copy exams, import question & answer lists.
 
 ## Usage
-Run the program, select your option from the menu and proceed along with the program requests and inputs.
+Run the program, choose whether to Import a 'questions.ser' file or the pre-made questions list.
+If you choose to import the 'questions list' it will import pre-made questions and save them to a binary file named 'questions.ser' into 'Exams/' directory.
+(It will create the directory if it does not exist).
+On the next program run, you can choose Option 2 in the menu to Import the 'questions.ser' file.
 
 ## Content
 Contains a way to add a new question + answer.
