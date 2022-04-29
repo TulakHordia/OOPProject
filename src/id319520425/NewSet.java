@@ -5,12 +5,15 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class NewSet<T extends AmericanAnswers> implements Set<T>, Serializable{
 	
-	ArrayList<T> data = new ArrayList<T>();
+	List<T> data = new ArrayList<T>();
 	
 	@Override
 	public int size() {
@@ -29,12 +32,12 @@ public class NewSet<T extends AmericanAnswers> implements Set<T>, Serializable{
 
 	@Override
 	public boolean contains(Object o) {
-		if (data.contains(o)) {
-			return true;
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i).equals(o)) {
+				return true;
+			}
 		}
-		else {
-			return false;
-		}
+		return false;
 	}
 
 	@Override
@@ -65,22 +68,11 @@ public class NewSet<T extends AmericanAnswers> implements Set<T>, Serializable{
 		return arr;
 	}
 
-	public boolean add(int i, T e) {
-		if (data.contains(e)) {
-			System.out.println("Object already exists in Data.");
-			return false;
-		}
-		else {
-			data.add(i, e);
-			return true;
-		}
-	}
 
 	@Override
 	public boolean remove(Object o) {
 		if (data.contains(o)) {
 			data.remove(o);
-			System.out.println("Removed sucessfully.");
 			return true;
 		}
 		else {
@@ -141,27 +133,31 @@ public class NewSet<T extends AmericanAnswers> implements Set<T>, Serializable{
 
 	@Override
 	public boolean add(T e) {
-		if (data.contains(e)) {
-			System.out.println("Object already exists in Data.");
-			return false;
-		}
-		if (!(e instanceof AmericanAnswers) ) {
-			System.out.println("Object not an american answer.");
-			return false;
-		}
-		else {
+		if (data.isEmpty()) {
 			data.add(e);
-			return true;
 		}
+		
+		for (T xd : data) {
+			if (xd.equals(e)) {
+				return false;
+			}
+			else {
+				data.add(e);
+				return true;
+			}
+		}
+		return true;
 	}
 
 	public void set(int i, Object object) {
 		data.set(i, (T) object);
-		System.out.println("Changed sucessfully.");
 		
 	}
 
 	public T get(int index) {
 		return data.get(index);
 	}
+	
+
+	
 }

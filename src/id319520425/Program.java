@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 public class Program implements ProgramMethods {
@@ -55,17 +56,20 @@ public class Program implements ProgramMethods {
 						System.out.println("Please enter your question below: ");
 						String ameriQuestion = input.nextLine();
 						AmericanQ ameriC = new AmericanQ(ameriQuestion);
-						manage.addAmericanQuestion(ameriC);
-						System.out.println("How many answers do you want to add? (2 to 6) ");
-						int answersAmount = manage.safeNextInt(input);
-						for (int i = 0; i < answersAmount; i++) {
-							System.out.println("Please enter answer number " + (i+1) + ": ");
-							String answer = input.nextLine();
-							System.out.println("Is it a correct answer or not? (true/false): ");
-							boolean isTrue = manage.safeNextBoolean(input);
-							System.out.println(ameriC.addAnswer(new AmericanAnswers(answer, isTrue)));
+						if (!manage.addAmericanQuestion(ameriC)) {
+							break;
 						}
-						manage.addBuiltInAnswers(ameriC);
+						else {
+							System.out.println("How many answers do you want to add? (2 to 6) ");
+							int answersAmount = manage.safeNextInt(input);
+							for (int i = 0; i < answersAmount; i++) {
+								System.out.println("Please enter answer number " + (i+1) + ": ");
+								String answer = input.nextLine();
+								System.out.println("Is it a correct answer or not? (true/false): ");
+								boolean isTrue = manage.safeNextBoolean(input);
+								System.out.println(ameriC.addAnswer(new AmericanAnswers(answer, isTrue)));
+							}
+						}
 						break;
 					}
 					else if (addQuestionChoice == 2) {
@@ -73,7 +77,9 @@ public class Program implements ProgramMethods {
 						String question = input.nextLine();
 						System.out.println("Please enter an answer: ");
 						String answer = input.nextLine();
-						System.out.println(manage.addOpenQuestions(question, answer));
+						if (!manage.addOpenQuestions(question, answer)) {
+							break;
+						}
 						break;
 					}
 				}
@@ -155,7 +161,7 @@ public class Program implements ProgramMethods {
 				manage.setSize(amountOfQuestions);
 				manage.printQuestionsOnly();
 				int answersAmount = 0;
-				ArrayList<Integer> answersArray = new ArrayList<>();
+				List<Integer> answersArray = new ArrayList<>();
 				System.out.println("Please choose the question you wish to add: ");
 				for (int i = 0; i < amountOfQuestions; i++) {
 					int questionNum =  manage.safeNextInt(input);
@@ -165,12 +171,11 @@ public class Program implements ProgramMethods {
 						else {
 							System.out.println("Please choose the amount of answers you want for the question: ");
 							answersAmount =  manage.safeNextInt(input);
-							answersArray = new ArrayList<>(Collections.nCopies(answersAmount, 0));
 							System.out.println("These are the answers for question #"+questionNum);
 							manage.getAmericanAnswer(questionNum);
 							System.out.println("Please select the answers you want: ");
-							for (Integer j : answersArray) {
-								answersArray.set(j, manage.safeNextInt(input));
+							for (int j = 0; j < answersAmount; j++) {
+								answersArray.add(manage.safeNextInt(input));
 							}
 							manage.addQuestionToManualExam(questionNum, answersArray);
 						}
@@ -183,7 +188,7 @@ public class Program implements ProgramMethods {
 				System.out.println("How many questions would you like in your exam? ");
 				System.out.println("There are only: " + manage.checkAllQuestionsLength() + " Questions available.");
 				int questAmount =  manage.safeNextInt(input);
-				if (questAmount < 0 || questAmount > manage.checkAllQuestionsLength()) {
+				while (questAmount <= 0 || questAmount > manage.checkAllQuestionsLength()) {
 					System.out.println("Invalid amount of question, please select again: ");
 					questAmount =  manage.safeNextInt(input);
 				}
@@ -223,7 +228,6 @@ public class Program implements ProgramMethods {
 			case 12:
 				
 				questionsList();
-				manage.saveToBinaryFile();
 				break;
 				
 			case 13:
@@ -264,12 +268,11 @@ public class Program implements ProgramMethods {
 	
 	@Override
 	public boolean importAndSaveQuestionsList() throws FileNotFoundException, IOException {
-		System.out.println("Would you like to import the questions list? ");
+		System.out.println("Would you like to import the pre-made 'questions list'? ");
 		System.out.println("Type 1 if yes, 2 if no.");
 		int qChoice = manage.safeNextInt(input);
 		if (qChoice == 1) {
 			questionsList();
-			manage.saveToBinaryFile();
 			return true;
 		}
 		else {
@@ -362,6 +365,7 @@ public class Program implements ProgramMethods {
 		ameriTest2.addAnswer(ameriAnsF4);
 		ameriTest2.addAnswer(ameriAnsF5);
 		manage.addBuiltInAnswers(ameriTest2);
+
 		
 		//Only one question is true
 		ameriTest3.addAnswer(ameriAns5);
@@ -370,6 +374,7 @@ public class Program implements ProgramMethods {
 		ameriTest3.addAnswer(ameriAnsF3);
 		ameriTest3.addAnswer(ameriAnsF4);
 		manage.addBuiltInAnswers(ameriTest3);
+
 		
 		//more than one is correct #2
 		ameriTest4.addAnswer(ameriAns6);
@@ -378,6 +383,7 @@ public class Program implements ProgramMethods {
 		ameriTest4.addAnswer(ameriAnsF3);
 		ameriTest4.addAnswer(ameriAnsF4);
 		manage.addBuiltInAnswers(ameriTest4);
+
 		
 		//Open questions + Answers
 		manage.addOpenQuestions(quest5, openAns);
@@ -395,7 +401,6 @@ public class Program implements ProgramMethods {
 			System.out.println("questions.ser file does not exist.");
 			System.out.println("Importing pre-made questions list.");
 			questionsList();
-			manage.saveToBinaryFile();
 		}
 	}
 	

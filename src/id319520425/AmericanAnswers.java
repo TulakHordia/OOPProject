@@ -37,4 +37,19 @@ public class AmericanAnswers implements Serializable {
 	public String toString() {
 		return answer;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if ( !(obj instanceof AmericanAnswers) ) {
+			return false;
+		}
+		if (obj == null) {
+			return false;
+		}
+		AmericanAnswers other = (AmericanAnswers) obj;
+		return other.getAnswer().equals(this.answer);
+	}
 }

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,15 +21,16 @@ import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Manager {
 
-	ArrayList<Question> allQuestions = new ArrayList<Question>();
-	ArrayList<Question> manualExamArray = new ArrayList<Question>();
-	ArrayList<Question> autoExamArray = new ArrayList<Question>();
-	ArrayList<File> allExistingExams = new ArrayList<File>();
+	List<Question> allQuestions = new ArrayList<Question>();
+	List<Question> manualExamArray = new ArrayList<Question>();
+	List<Question> autoExamArray = new ArrayList<Question>();
+	List<File> allExistingExams = new ArrayList<File>();
 	LinkedHashSet<File> set = new LinkedHashSet<File>();
 	private int size;
 	private int examNum;
@@ -79,26 +81,11 @@ public class Manager {
 	}
 
 	private Question getQuestionById(int questionNumber) {
-		if (questionNumber == allQuestions.size()) {
-			return null;
-		}
-		if (allQuestions.get(questionNumber) == null) {
-			getQuestionById(questionNumber + 1);
-		}
-		for (int i = 0; i < allQuestions.size(); i++) {
-			while (allQuestions.get(i) != null) {
-				if (allQuestions.get(i).getQuestionNumber() == questionNumber) {
-					return allQuestions.get(i);
-				}
-				break;
-			}
-
-		}
-		return null;
+		return allQuestions.get(questionNumber);
 	}
 
 	public String updateQuestion(int questionNumber, String question) {
-		Question quest = getQuestionById(questionNumber);
+		Question quest = getQuestionById(questionNumber-1);
 		if (quest != null) {
 			quest.setQuestion(question);
 			return "Updated successfully.";
@@ -107,10 +94,7 @@ public class Manager {
 	}
 
 	public String deleteAnswer(int questionNumber, int loc) {
-		Question quest = getQuestionById(questionNumber);
-		if (quest == null) {
-			return "Question does not exist.";
-		}
+		Question quest = getQuestionById(questionNumber-1);
 		if (quest instanceof OpenQ) {
 			return "Cannot delete an answer from an open question.";
 		}
@@ -123,10 +107,7 @@ public class Manager {
 	}
 
 	public String updateAnswer(int questionNumber, int loc, String newAnswer) {
-		Question quest = getQuestionById(questionNumber);
-		if (quest == null) {
-			return "Question does not exist.";
-		}
+		Question quest = getQuestionById(questionNumber-1);
 		if (quest instanceof OpenQ) {
 			OpenQ open = (OpenQ) quest;
 			open.setCorrectAnswer(newAnswer);
@@ -208,21 +189,20 @@ public class Manager {
 		}
 	}
 	
-	public void write(String filename, ArrayList<Question> theExamArray) throws IOException {
-		Files.createDirectories(Paths.get("Exams/"));
+	public void write(String filename, List<Question> manualExamArray) throws IOException {
 		FileWriter fwQ = new FileWriter("Exams/"+"exam_"+examNum+"_"+filename+"_questions.txt");
 		FileWriter fwA = new FileWriter("Exams/"+"exam_"+examNum+"_"+filename+"_solution.txt");
 		examNum++;
 
-		for (int i = 0; i < theExamArray.size(); i++) {
-			if (theExamArray.get(i).getQuestion() != null) {
-				fwQ.write("Question number: " + (i+1) + "\n" + theExamArray.get(i).getQuestion()+"\n");
+		for (int i = 0; i < manualExamArray.size(); i++) {
+			if (manualExamArray.get(i) != null) {
+				fwQ.write("Question number: " + (i+1) + "\n" + manualExamArray.get(i).getQuestion()+"\n");
 			}
 		}
 		
-		for (int i = 0; i < theExamArray.size(); i++) {
-			if (theExamArray.get(i) instanceof AmericanQ) {
-				AmericanQ aQ = (AmericanQ) theExamArray.get(i);
+		for (int i = 0; i < manualExamArray.size(); i++) {
+			if (manualExamArray.get(i) instanceof AmericanQ) {
+				AmericanQ aQ = (AmericanQ) manualExamArray.get(i);
 				fwA.write("\nQuestion: " + aQ.getQuestion() + "\n");
 				fwA.write("Answers for question number: " + (i+1) + "\n");
 				for (int j = 0; j < aQ.getAnswersNum(); j++) {
@@ -231,8 +211,8 @@ public class Manager {
 					}
 				}
 			}
-			if (theExamArray.get(i) instanceof OpenQ) {
-				OpenQ oQ = (OpenQ) theExamArray.get(i);
+			if (manualExamArray.get(i) instanceof OpenQ) {
+				OpenQ oQ = (OpenQ) manualExamArray.get(i);
 				fwA.write("\nQuestion: " + oQ.getQuestion() + "\n");
 				fwA.write("Answer for question number: " + (i+1) + "\n");
 				fwA.write(oQ.getAnswer()+"\n");
@@ -302,7 +282,6 @@ public class Manager {
 	}
 	
 	public void autoImportOnLaunch() throws ClassNotFoundException, IOException {
-		Files.createDirectories(Paths.get("Exams/"));
 		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Exams/questions.ser"))){
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
@@ -310,12 +289,18 @@ public class Manager {
 		} catch (EOFException e) {
 			System.out.println("Automatically Imported data from questions.ser");
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			System.out.println("File not found.");
 			System.out.println("Please import questions list. (Option 12)");
 		}
 		
 		for (int i = 0; i < allQuestions.size(); i++) {
-			Question quest = getQuestionById(i);
+			Question quest = null;
+			if (i == 0) {
+				quest = getQuestionById(i+1);
+			}
+			else {
+				quest = getQuestionById(i);
+			}
 			if (quest != null) {
 				quest.setQuestionNumber(allQuestions);
 				break;
@@ -331,7 +316,7 @@ public class Manager {
 			}
 		}
 		removeDuplicates(allExistingExams);
-		Iterator itr = set.iterator();
+		Iterator<File> itr = set.iterator();
 		int fNum = 1;
 		while (itr.hasNext()) {
 			System.out.println(fNum+") "+itr.next());
@@ -339,9 +324,9 @@ public class Manager {
 		}
 	}
 	
-	public LinkedHashSet<File> removeDuplicates(ArrayList<File> allEArray) {
-		for (int i = 0; i < allEArray.size(); i++) {
-			set.add(allEArray.get(i));
+	public LinkedHashSet<File> removeDuplicates(List<File> allExistingExams) {
+		for (int i = 0; i < allExistingExams.size(); i++) {
+			set.add(allExistingExams.get(i));
 		}
 		return set;
 	}
@@ -359,23 +344,19 @@ public class Manager {
 		inputS.close();
 	}
 
-	public void sortByAnswerLength(ArrayList<Question> manualExamArrayInput) {
+	public void sortByAnswerLength(List<Question> array) {
 		QuestionComparator qC = new QuestionComparator();
-		manualExamArray.sort(qC);
+		array.sort(qC);
 	}
 
-	public void sortAndPrintAutoExamArray(ArrayList<Question> theExamArray) throws IOException {
-		QuestionComparator qC = new QuestionComparator();
-		theExamArray.sort(qC);
+	public void sortAndPrintAutoExamArray() throws IOException {
+		sortByAnswerLength(autoExamArray);
+		write(getDateTime(), autoExamArray);
 		
-		write(getDateTime(), theExamArray);
-		
-		for (int i = 0; i < theExamArray.size(); i++) {
-			if (theExamArray.get(i).getQuestion() != null) {
-				System.out.println(theExamArray.get(i));
-			}
+		for (int i = 0; i < autoExamArray.size(); i++) {
+			System.out.println(autoExamArray.get(i));
 		}
-		System.out.println("Exam created on the: " + getDateTime() + ", contains: " + theExamArray.size() + " questions.");
+		System.out.println("Exam created on the: " + getDateTime() + ", contains: " + autoExamArray.size() + " questions.");
 		autoExamArray.clear();
 	}
 
@@ -386,9 +367,7 @@ public class Manager {
 				System.out.println(manualExamArray.get(i));
 			}
 		}
-		
 		write(getDateTime(), manualExamArray);
-		
 		int counter = 0;
 		for (int i = 0; i < manualExamArray.size(); i++) {
 			if (manualExamArray.get(i) != null) {
@@ -399,13 +378,13 @@ public class Manager {
 		manualExamArray.clear();
 	}
 
-	public boolean checkQuestionIsInArray(ArrayList<Question> autoExamArray2, Question quest) {
+	public boolean checkQuestionIsInArray(Question quest) {
 		if (quest == null) {
 			return false;
 		}
-		for (int i = 0; i < autoExamArray2.size(); i++) {
-			if (autoExamArray2.get(i) != null) {
-				if (autoExamArray2.get(i).getQuestion().equals(quest.getQuestion())) {
+		for (int i = 0; i < autoExamArray.size(); i++) {
+			if (autoExamArray.get(i) != null) {
+				if (autoExamArray.contains(quest)) {
 					return true;
 				}
 			}
@@ -413,17 +392,16 @@ public class Manager {
 		return false;
 	}
 
-	public Question generateNewQuestion(ArrayList<Question> autoExamArray2) {
+	public Question generateNewQuestion(int amount) {
 		Random rand = new Random();
-		Question quest = null;
-		while (quest == null) {
-			int n = rand.nextInt(allQuestions.size());
-			quest = getQuestionById(n);
-			if (checkQuestionIsInArray(autoExamArray2, quest)) {
-				quest = null;
+		while (autoExamArray.size() != amount) {
+			Question quest = getQuestionById(rand.nextInt(amount));
+			while (checkQuestionIsInArray(quest)) {
+				quest = getQuestionById(rand.nextInt(amount));
 			}
+			return quest;
 		}
-		return quest;
+		return null;
 	}
 
 	public int checkAllQuestionsLength() {
@@ -462,18 +440,18 @@ public class Manager {
 
 	public void autoCreateExam(int amount) throws IOException {
 		for (int i = 0; i < amount; i++) {
-			Question quest = generateNewQuestion(autoExamArray);
+			Question quest = generateNewQuestion(amount);
 			if (quest instanceof OpenQ) {
 				OpenQ openQ = (OpenQ) quest;
 				autoExamArray.add(openQ);
 			}
 			if (quest instanceof AmericanQ) {
 				AmericanQ ameriQ = (AmericanQ) quest;
-				addBuiltInAnswers(ameriQ);
 				autoExamArray.add(ameriQ);
+				addBuiltInAnswers(ameriQ);
 			}
 		}
-		sortAndPrintAutoExamArray(autoExamArray);
+		sortAndPrintAutoExamArray();
 	}
 
 	public boolean checkInstanceOfQuestion(int questionNum) {
@@ -492,38 +470,27 @@ public class Manager {
 		if (quest instanceof AmericanQ) {
 			AmericanQ aQ = (AmericanQ) quest;
 			for (int i = 0; i < aQ.getAnswersNum(); i++) {
-				if (aQ.getAnswers(i).getAnswer() != null) {
+				if (!aQ.getAnswers(i).getAnswer().isEmpty()) {
 					System.out.println("[" + (i + 1) + "] " + aQ.getAnswers(i));
+				}
+				else {
+					System.out.println("No answers available.");
 				}
 			}
 		}
 	}
 
-	public boolean addAmericanQuestionToManualExam(AmericanQ question, ArrayList<Integer> answersArray) {
+	public boolean addAmericanQuestionToManualExam(AmericanQ question) {
 		for (int i = 0; i < manualExamArray.size(); i++) {
 			if (manualExamArray.get(i) != null) {
-				if (manualExamArray.get(i).getQuestion().equals(question.getQuestion())) {
+				if (manualExamArray.contains(question)) {
 					System.out.println("Question already exists.");
 					return false;
 				}
 			}
 		}
-
-		for (int i = 0; i < manualExamArray.size(); i++) {
-			if (manualExamArray.get(i) == null) {
-				AmericanQ test = question;
-//				manualExamArray.add(test);
-				manualExamArray.set(i, test);
-				for (int j = 0; j < answersArray.size(); j++) {
-					if (answersArray.get(j) != 0) {
-						int temp = answersArray.get(j);				
-						test.addAnswer(new AmericanAnswers(question.getAnswers(temp-1)));
-					}
-				}
-				addBuiltInAnswers(test);
-				System.out.println("Added question #" + (i + 1));
-				return true;
-			}
+		if (manualExamArray.add(question)) {
+			return true;
 		}
 		return false;
 	}
@@ -538,9 +505,9 @@ public class Manager {
 			}
 		}
 		for (int i = 0; i < manualExamArray.size(); i++) {
-			if (manualExamArray.get(i) == null) {
-//				manualExamArray.add(new OpenQ(question, answer));
-				manualExamArray.set(i, new OpenQ(question, answer));
+			if (manualExamArray.get(i) == null || manualExamArray.get(i).getQuestion().isEmpty()) {
+				manualExamArray.add(new OpenQ(question, answer));
+//				manualExamArray.set(i, new OpenQ(question, answer));
 				System.out.println("Added question #" + (i + 1));
 				return true;
 			}
@@ -548,7 +515,7 @@ public class Manager {
 		return false;
 	}
 
-	public boolean addQuestionToManualExam(int questionNum, ArrayList<Integer> answersArray) {
+	public boolean addQuestionToManualExam(int questionNum, List<Integer> answersArray) {
 		Question question = getQuestionById(questionNum);
 		if (question instanceof OpenQ) {
 			OpenQ open = (OpenQ) question;
@@ -556,8 +523,14 @@ public class Manager {
 			return true;
 		}
 		if (question instanceof AmericanQ) {
-			AmericanQ aQ = (AmericanQ) question;
-			addAmericanQuestionToManualExam(aQ, answersArray);
+			AmericanQ dQ = (AmericanQ) question;
+			AmericanQ aQ = new AmericanQ(dQ.getQuestion());
+			
+			for (int i = 0; i < answersArray.size(); i++) {
+				System.out.println(answersArray.get(i));
+				aQ.addAnswer(new AmericanAnswers(dQ.getAnswers(answersArray.get(i)-1)));
+			}
+			addAmericanQuestionToManualExam(aQ);
 			return true;
 		}
 		return false;

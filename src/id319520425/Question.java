@@ -2,6 +2,7 @@ package id319520425;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Question implements Serializable {
 	
@@ -18,7 +19,7 @@ public abstract class Question implements Serializable {
 		return questionNumber;
 	}
 	
-	public void setQuestionNumber(ArrayList<Question> allQuestions) {
+	public void setQuestionNumber(List<Question> allQuestions) {
 		questionNumCounter = (allQuestions.size()+1);
 	}
 	

@@ -2,11 +2,10 @@ package id319520425;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AmericanQ extends Question implements Serializable {
 
-	public static final int MAX_ANS = 10;
-//	ArrayList<AmericanAnswers> Answers = new ArrayList<AmericanAnswers>();
 	NewSet<AmericanAnswers> Answers = new NewSet<AmericanAnswers>();
 	private int answersNum;
 	
@@ -23,14 +22,19 @@ public class AmericanQ extends Question implements Serializable {
 		}
 		answersNum++;
 		if (answersNum >= Answers.size()) {
-			Answers.add(answersNum-1, answer);
+			Answers.add(answer);
 		}
 		return "Answer added successfully";
 	}
 	
 	public void deleteAnswer(int index) {
-		Answers.set((index-1), null);
-		answersNum--;
+		if (Answers.isEmpty()) {
+			System.out.println("No answers currently in database.");
+		}
+		else {
+			Answers.remove(Answers.get(index-1));
+			answersNum--;
+		}
 	}
 	
 	public void updateAnswer(int index, String answer) {
@@ -61,5 +65,4 @@ public class AmericanQ extends Question implements Serializable {
 	public AmericanAnswers getAnswers(int index) {
 		return Answers.get(index);
 	}
-
 }
