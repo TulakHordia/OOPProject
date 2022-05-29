@@ -396,14 +396,22 @@ public class Manager {
 				allQuestions.add((Question) inFile.readObject());
 			}
 		} catch (EOFException e) {
+			fireImportFromBinaryFile(allQuestions);
+			JOptionPane.showMessageDialog(null, "Imported from: "+fileName);
 			System.out.println("Imported data from " + fileName);
 		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "File not found");
+			int input = JOptionPane.showConfirmDialog(null, "File not found"+"\nWould you like to type again?"+"\nMake sure name ends with .ser");
+			if (input == 0) {
+				String m = JOptionPane.showInputDialog("Enter filename:(ends with .ser)");
+				readFromBinaryFile(m);
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "No file imported");
+			}
 			System.out.println("File " + fileName + " does not exist in the directory.");
-			e.getMessage();
-			e.printStackTrace();
 		} 
-		JOptionPane.showMessageDialog(null, "Imported from: "+fileName);
-		fireImportFromBinaryFile(allQuestions);
+
 	}
 
 	

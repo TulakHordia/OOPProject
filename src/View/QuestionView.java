@@ -49,6 +49,7 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	private GridPane gpRoot;
 	private RadioButton sTrue;
 	private RadioButton sFalse;
+	private int savedValue;
 	private Label space;
 	private Label space2;
 	private Label space3;
@@ -545,18 +546,31 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 					JOptionPane.showMessageDialog(null, "No amount entered!");
 				}
 				else {
-					for (MainUiListener l : questUiListeners) {
-						int savedValue = Integer.parseInt(amountOfQuestionsField.getText());
-						try {
-							l.createAndOpenExam(savedValue);
-						} catch (IOException e) {
-							errorMessageUi(e.getMessage());
+					String m = amountOfQuestionsField.getText();
+					if (checkAmountOfQuestions(m)) {
+						for (MainUiListener l : questUiListeners) {
+							savedValue = Integer.parseInt(m);
+							try {
+								l.createAndOpenExam(savedValue);
+							} catch (IOException e) {
+								errorMessageUi(e.getMessage());
+							}
 						}
 					}
 				}
 			}
 		});
 		return createAndOpenExamWindow;	
+	}
+	
+	public boolean checkAmountOfQuestions(String m) {
+		try {
+			savedValue = Integer.parseInt(m);
+			return true;
+		} catch (NumberFormatException e) {
+			errorMessageUi("Please enter a numerical value!");
+			return false;
+		}
 	}
 	
 	public Button saveToFileButton() {

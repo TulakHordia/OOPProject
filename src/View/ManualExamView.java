@@ -136,9 +136,14 @@ public class ManualExamView implements UiElements, AbstractManualExamView {
 
 			@Override
 			public void handle(MouseEvent event) {
-				for (MainUiListener l : questUiListeners) {
-					OpenQ oQ = openQuestionsTable.getSelectionModel().getSelectedItem();
-					l.addOpenQuestionToManualExamList(oQ);
+				if (openQuestionsTable.getSelectionModel().getSelectedItem() == null) {
+					errorMessageUi("No question selected");
+				}
+				else {
+					for (MainUiListener l : questUiListeners) {
+						OpenQ oQ = openQuestionsTable.getSelectionModel().getSelectedItem();
+						l.addOpenQuestionToManualExamList(oQ);
+					}
 				}
 			}
 		});
@@ -153,9 +158,14 @@ public class ManualExamView implements UiElements, AbstractManualExamView {
 
 			@Override
 			public void handle(MouseEvent event) {
-				for (MainUiListener l : questUiListeners) {
-					AmericanQ aQ = americanQuestionsTable.getSelectionModel().getSelectedItem();
-					l.addAmericanQuestionToManualExamList(aQ);
+				if (americanQuestionsTable.getSelectionModel().getSelectedItem() == null) {
+					errorMessageUi("No question selected");
+				}
+				else {
+					for (MainUiListener l : questUiListeners) {
+						AmericanQ aQ = americanQuestionsTable.getSelectionModel().getSelectedItem();
+						l.addAmericanQuestionToManualExamList(aQ);
+					}
 				}
 			}
 		});
