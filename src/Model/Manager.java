@@ -1,16 +1,33 @@
 package Model;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.InputMismatchException;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 import Listeners.MainEventsListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
+import javafx.beans.property.SimpleStringProperty;
 
 public class Manager {
 
@@ -20,45 +37,89 @@ public class Manager {
 	List<File> allExistingExams;
 	LinkedHashSet<File> set;
 	private Vector<MainEventsListener> mainListener = new Vector<MainEventsListener>();
-	ObservableList<Question> questions = FXCollections.observableArrayList();
 
+	@SuppressWarnings("unused")
 	private int size;
 	private int examNum;
+	
+	private SimpleStringProperty name;
 
 	Scanner input = new Scanner(System.in);
 	
-	
+	public SimpleStringProperty nameProperty() {
+		return name;
+	}
+
 	public void registerListener(MainEventsListener listener) {
 		mainListener.add(listener);
 	}
 	
-	public void fireAddOpenQuestion(OpenQ question) {
+	private void fireAddOpenQuestion(OpenQ question) {
 		for (MainEventsListener l : mainListener) {
-			l.addedOpenQuestionToModelEvent(question.getQuestion(), question.getAnswer());
 			l.addedOpenQuestionToModelEventObject(question);
 		}
 	}
 	
-	public void fireAddAmericanQuestion(AmericanQ question) {
+	private void fireAddAmericanQuestion(AmericanQ question) {
 		for (MainEventsListener l : mainListener) {
-			l.addedAmericanQuestionToModelEvent(question);
 			l.addedAmericanQuestionToModelEventObject(question);
 		}
 	}
 	
-	public void fireAddAmericanAnswerToQuestion(AmericanQ aN) {
+	private void fireImportFromBinaryFile(List<Question> questions) {
 		for (MainEventsListener l : mainListener) {
-			l.addedAmericanAnswerToAmericanQuestionModelEvent(aN);
+			l.importedFromBinaryFile(questions);
+		}
+	}
+	
+	private void fireSavedAllQuestionsToFile(String fileName, int amountOfQuestions) {
+		for (MainEventsListener l : mainListener) {
+			l.savedAllQuestionsToFile(fileName, amountOfQuestions);
+		}
+	}
+	
+	private void fireDeletedAmericanAnswer(AmericanAnswers aN, AmericanQ question) {
+		for (MainEventsListener l : mainListener) {
+			l.deletedAmericanAnswer(aN, question);
+		}
+	}
+	
+
+	private void fireCreateAutoExam(int amount, List<Question> exam) {
+		for (MainEventsListener l : mainListener) {
+			l.createdAutoExam(amount, exam);
+		}
+	}
+	
+	private void fireAddAmericanAnswerToQuestion(AmericanQ question) {
+		for (MainEventsListener l : mainListener) {
+			l.addedAmericanAnswerToQuestion(question);
+		}
+	}
+	
+
+	private void fireCopiedAnExam(File fileName) {
+		for (MainEventsListener l : mainListener) {
+			l.copiedAnExistingExam(fileName);
+		}
+	}
+	
+	
+	private void fireSavedToBinaryOnExit() {
+		for (MainEventsListener l : mainListener) {
+			l.savedToBinaryFileOnExit();
 		}
 	}
 	
 	public void addAmericanAnswerToQuestion(AmericanQ question, String answer, boolean isTrue) {
 		AmericanAnswers aN = new AmericanAnswers(answer, isTrue);
-		question.addAnswer(aN);
+		System.out.println(question.addAnswer(aN));
 		fireAddAmericanAnswerToQuestion(question);
 	}
 	
 	
+
+
 	public Manager() {
 		allQuestions = new ArrayList<Question>();
 		manualExamArray = new ArrayList<Question>();
@@ -134,6 +195,13 @@ public class Manager {
 		}
 		ameriQ.deleteAnswer(loc);
 		return "Deleted successfully.";
+	}
+	
+	public void deleteAmericanAnswer(AmericanAnswers aN, AmericanQ question) {
+		if (question.deleteAmericanAnswer(aN)) {
+			fireDeletedAmericanAnswer(aN, question);
+			System.out.println("Deleted answer " + aN.getAnswer());
+		}
 	}
 
 	public String updateAnswer(int questionNumber, int loc, String newAnswer) {
@@ -237,7 +305,7 @@ public class Manager {
 				fwA.write("Answers for question number: " + (i+1) + "\n");
 				for (int j = 0; j < aQ.getAnswersNum(); j++) {
 					if (aQ.getAnswers(j) != null) {
-						fwA.write(aQ.getAnswers(j).getAnswer()+" - "+aQ.getAnswers(j).IsTrue()+"\n");
+						fwA.write(aQ.getAnswers(j).getAnswer()+" - "+aQ.getAnswers(j).getIsTrue()+"\n");
 					}
 				}
 			}
@@ -261,48 +329,71 @@ public class Manager {
 		boolean check = new File(fileName).exists();
 		
 		if (!check) {
-			FileWriter fwAll = new FileWriter("Exams/"+fileName);
-			System.out.println("Created a new " + fileName + " File in Exams folder.");
-			
-			for (int i = 0; i < allQuestions.size(); i++) {
-				fwAll.write("Question number: " + (i+1) + "\n" + allQuestions.get(i)+"\n");
+			if (allQuestions.size() == 0) {
+				JOptionPane.showMessageDialog(null, "No questions exist, cannot create an empty file");
 			}
-			
-			fwAll.flush();
-			fwAll.close();
+			else {
+				FileWriter fwAll = new FileWriter("Exams/"+fileName+".txt");
+				System.out.println("Created a new " + fileName +".txt"+ " File in Exams folder.");
+				for (int i = 0; i < allQuestions.size(); i++) {
+					fwAll.write("Question number: " + (i+1) + "\n" + allQuestions.get(i)+"\n");
+				}
+				fireSavedAllQuestionsToFile(fileName, getAllQuestionSize());
+				fwAll.flush();
+				fwAll.close();
+			}
 		}
 		else {
-			System.out.println("A 'questions.txt' file already exists.");
-			System.out.println("Added all ");
-			FileWriter fwAll = new FileWriter("Exams/"+fileName, true);
-
-			for (int i = 0; i < allQuestions.size(); i++) {
-				fwAll.write("Question number: " + (i+1) + "\n" + allQuestions.get(i)+"\n");
+			if (allQuestions.size() == 0) {
+				JOptionPane.showMessageDialog(null, "No questions exist, cannot create an empty file");
 			}
-			
-			fwAll.flush();
-			fwAll.close();
+			else {
+				System.out.println("A 'questions' file already exists.");
+				System.out.println("Added all ");
+				FileWriter fwAll = new FileWriter("Exams/"+fileName+".txt", true);
+				for (int i = 0; i < allQuestions.size(); i++) {
+					fwAll.write("Question number: " + (i+1) + "\n" + allQuestions.get(i)+"\n");
+				}
+				fireSavedAllQuestionsToFile(fileName, getAllQuestionSize());
+				fwAll.flush();
+				fwAll.close();
+			}
 		}
-		System.out.println("-----Saved all questions & answers.-----");
 	}
 
-	
-	public void saveToBinaryFile() throws IOException, FileNotFoundException {
-		Files.createDirectories(Paths.get("Exams/"));
-		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("Exams/questions.ser"));
+	public void saveToBinaryFile(String fileName) throws IOException, FileNotFoundException {
+		Files.createDirectories(Paths.get("Data/"));
+		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("Data/"+fileName+".ser"));
 		for (int i = 0; i < allQuestions.size(); i++) {
 			outFile.writeObject(allQuestions.get(i));
 		}
 		outFile.close();
-		System.out.println("Saved to: Exams/questions.ser");
+		JOptionPane.showMessageDialog(null, "Saved to: Data/"+fileName+".ser");
+		System.out.println("Saved to: Data/"+fileName+".ser");
 		
 	}
 	
+	public void saveToBinaryFileAutomatically() throws IOException, FileNotFoundException {
+		Files.createDirectories(Paths.get("Data/"));
+		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("Data/questions.ser"));
+		if (allQuestions.size() > 0) {
+			for (int i = 0; i < allQuestions.size(); i++) {
+				outFile.writeObject(allQuestions.get(i));
+			}
+			outFile.close();
+			fireSavedToBinaryOnExit();
+			System.out.println("Saved to: Data/questions.ser");
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Did not save as there were no questions in the data");
+		}
+	}
+
+
 	public void readFromBinaryFile(String fileName) throws IOException, FileNotFoundException, ClassNotFoundException {
-		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Exams/"+fileName))){
+		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Data/"+fileName))){
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
-				questions.add((Question) inFile.readObject());
 			}
 		} catch (EOFException e) {
 			System.out.println("Imported data from " + fileName);
@@ -311,11 +402,13 @@ public class Manager {
 			e.getMessage();
 			e.printStackTrace();
 		} 
+		JOptionPane.showMessageDialog(null, "Imported from: "+fileName);
+		fireImportFromBinaryFile(allQuestions);
 	}
 
 	
 	public void autoImportOnLaunch() throws ClassNotFoundException, IOException {
-		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Exams/questions.ser"))){
+		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Data/questions.ser"))){
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
 			}
@@ -341,20 +434,17 @@ public class Manager {
 		}
 	}
 	
-	public void showAllExistingExamsInDirectory() {
+	public List<File> showAllExistingExamsInDirectory() {
 		File[] files = new File("Exams/").listFiles();
+		name = new SimpleStringProperty();
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].isFile()) {
 				allExistingExams.add(files[i]);
+				name.set(allExistingExams.get(i).getName());
 			}
 		}
 		removeDuplicates(allExistingExams);
-		Iterator<File> itr = set.iterator();
-		int fNum = 1;
-		while (itr.hasNext()) {
-			System.out.println(fNum+") "+itr.next());
-			fNum++;
-		}
+		return allExistingExams;
 	}
 	
 	public LinkedHashSet<File> removeDuplicates(List<File> allExistingExams) {
@@ -376,6 +466,26 @@ public class Manager {
 		output.close();
 		inputS.close();
 	}
+	
+	public void copyExistingExamByFileName(File fileName) throws IOException {
+		showAllExistingExamsInDirectory();
+		for (int i = 0; i < allExistingExams.size(); i++) {
+			if (allExistingExams.get(i).getName().equals(fileName.getName())) {
+				BufferedReader inputS = new BufferedReader(new FileReader(fileName));
+				FileWriter output = new FileWriter("Exams/"+"copy_of_"+allExistingExams.get(i).getName());
+				String count;
+				while ( (count = inputS.readLine()) != null ) {
+					output.write(count+"\n");
+				}
+				System.out.println("Created a copy of: " + allExistingExams.get(i).getName());
+				output.flush();
+				output.close();
+				inputS.close();
+				fireCopiedAnExam(fileName);
+			}
+		}
+	}
+
 
 	public void sortByAnswerLength(List<Question> array) {
 		QuestionComparator qC = new QuestionComparator();
@@ -385,6 +495,7 @@ public class Manager {
 	public void sortAndPrintAutoExamArray() throws IOException {
 		sortByAnswerLength(autoExamArray);
 		write(getDateTime(), autoExamArray);
+		fireCreateAutoExam(autoExamArray.size(), autoExamArray);
 		
 		for (int i = 0; i < autoExamArray.size(); i++) {
 			System.out.println(autoExamArray.get(i));
@@ -394,21 +505,27 @@ public class Manager {
 	}
 
 	public void sortAndPrintManualExamArray() throws IOException {
-		sortByAnswerLength(manualExamArray);
-		for (int i = 0; i < manualExamArray.size(); i++) {
-			if (manualExamArray.get(i) != null) {
-				System.out.println(manualExamArray.get(i));
-			}
+		if (manualExamArray.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "No questions added to the exam");
 		}
-		write(getDateTime(), manualExamArray);
-		int counter = 0;
-		for (int i = 0; i < manualExamArray.size(); i++) {
-			if (manualExamArray.get(i) != null) {
-				counter++;
+		else {
+			sortByAnswerLength(manualExamArray);
+			for (int i = 0; i < manualExamArray.size(); i++) {
+				if (manualExamArray.get(i) != null) {
+					System.out.println(manualExamArray.get(i));
+				}
 			}
+			write(getDateTime(), manualExamArray);
+			int counter = 0;
+			for (int i = 0; i < manualExamArray.size(); i++) {
+				if (manualExamArray.get(i) != null) {
+					counter++;
+				}
+			}
+			JOptionPane.showMessageDialog(null, "Exam created on the: " + getDateTime() + ", contains: " + counter + " questions.");
+			System.out.println("Exam created on the: " + getDateTime() + ", contains: " + counter + " questions.");
+			manualExamArray.clear();
 		}
-		System.out.println("Exam created on the: " + getDateTime() + ", contains: " + counter + " questions.");
-		manualExamArray.clear();
 	}
 
 	public boolean checkQuestionIsInArray(Question quest) {
@@ -451,7 +568,7 @@ public class Manager {
 		int trueCounter = 0;
 		int falseCounter = 0;
 		for (int j = 0; j < answers.getAnswersNum(); j++) {
-			if (answers.getAnswers(j).IsTrue()) {
+			if (answers.getAnswers(j).getIsTrue()) {
 				trueCounter++;
 			} else {
 				falseCounter++;
@@ -471,21 +588,34 @@ public class Manager {
 		}
 	}
 
-	public void autoCreateExam(int amount) throws IOException {
-		for (int i = 0; i < amount; i++) {
-			Question quest = generateNewQuestion(amount);
-			if (quest instanceof OpenQ) {
-				OpenQ openQ = (OpenQ) quest;
-				autoExamArray.add(openQ);
+	public void autoCreateExam(int amount) throws IOException, NumberFormatException {
+		try {
+			if (amount > 0 && amount <= allQuestions.size()) {
+				for (int i = 0; i < amount; i++) {
+					Question quest = generateNewQuestion(amount);
+					if (quest instanceof OpenQ) {
+						OpenQ openQ = (OpenQ) quest;
+						autoExamArray.add(openQ);
+					}
+					if (quest instanceof AmericanQ) {
+						AmericanQ ameriQ = (AmericanQ) quest;
+						autoExamArray.add(ameriQ);
+						addBuiltInAnswers(ameriQ);
+					}
+				}
+				sortAndPrintAutoExamArray();
 			}
-			if (quest instanceof AmericanQ) {
-				AmericanQ ameriQ = (AmericanQ) quest;
-				autoExamArray.add(ameriQ);
-				addBuiltInAnswers(ameriQ);
+			else {
+				String m = JOptionPane.showInputDialog("Only "+allQuestions.size()+" Questions available.");
+				int newAmount = Integer.parseInt(m);
+				autoCreateExam(newAmount);
 			}
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null, "Please enter a numerical value!");
 		}
-		sortAndPrintAutoExamArray();
+
 	}
+
 
 	public boolean checkInstanceOfQuestion(int questionNum) {
 		Question quest = getQuestionById(questionNum);
@@ -514,45 +644,30 @@ public class Manager {
 	}
 
 	public boolean addAmericanQuestionToManualExam(AmericanQ question) {
-		for (int i = 0; i < manualExamArray.size(); i++) {
-			if (manualExamArray.get(i) != null) {
-				if (manualExamArray.contains(question)) {
-					System.out.println("Question already exists.");
-					return false;
-				}
-			}
-		}
-		if (manualExamArray.add(question)) {
+		if (!manualExamArray.contains(question)) {
+			manualExamArray.add(question);
 			return true;
 		}
-		return false;
+		else {
+			return false;
+		}
 	}
 
-	public boolean addOpenQuestionToManualExam(String question, String answer) {
-		for (int i = 0; i < size; i++) {
-			if (manualExamArray.get(i) != null) {
-				if (manualExamArray.get(i).getQuestion().equals(question)) {
-					System.out.println("Question already exists.");
-					return false;
-				}
-			}
+	public boolean addOpenQuestionToManualExam(OpenQ oQ) {
+		if (!(manualExamArray.contains(oQ))) {
+			manualExamArray.add(oQ);
+			return true;
 		}
-		for (int i = 0; i < manualExamArray.size(); i++) {
-			if (manualExamArray.get(i) == null || manualExamArray.get(i).getQuestion().isEmpty()) {
-				manualExamArray.add(new OpenQ(question, answer));
-//				manualExamArray.set(i, new OpenQ(question, answer));
-				System.out.println("Added question #" + (i + 1));
-				return true;
-			}
+		else {
+			return false;
 		}
-		return false;
 	}
 
 	public boolean addQuestionToManualExam(int questionNum, List<Integer> answersArray) {
 		Question question = getQuestionById(questionNum);
 		if (question instanceof OpenQ) {
 			OpenQ open = (OpenQ) question;
-			addOpenQuestionToManualExam(open.getQuestion(), open.getAnswer());
+			addOpenQuestionToManualExam(open);
 			return true;
 		}
 		if (question instanceof AmericanQ) {
@@ -625,20 +740,12 @@ public class Manager {
 		return null;
 	}
 	
-	public AmericanQ getAmericanQuestions() {
-		for (Question l : allQuestions) {
-			if (l instanceof AmericanQ) {
-				AmericanQ aQ = (AmericanQ) l;
-				return aQ;
-			}
-		}
-		return null;
+	public int getAllQuestionSize() {
+		return allQuestions.size();
 	}
 	
-	public void importQuestionsList() {
-		Program p = new Program();
-		p.managingMethod();
-		questionsList();
+	public Question getAllQuestions(int index) {
+		return allQuestions.get(index);
 	}
 	
 	public void questionsList() {

@@ -3,13 +3,12 @@ package Model;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public interface UiElements {
-
-	public Text topText();
-	public Button saveAndExitOrReturn(Scene scene);
 	void sceneInit();
 	void componentsInit();
-	void gridPaneInit();
-	
+	void gridPane();
+	void closeStage(Stage stage);
+	public Button saveAndExitOrReturn(Scene scene);
 }

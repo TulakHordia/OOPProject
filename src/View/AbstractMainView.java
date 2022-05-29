@@ -1,20 +1,20 @@
 package View;
 
+import java.util.List;
+
 import Listeners.MainUiListener;
-import Model.AmericanAnswers;
 import Model.AmericanQ;
 import Model.OpenQ;
+import Model.Question;
 
 public interface AbstractMainView {
-	void addOpenQuestionToComboBoxInUi(String question, String answer);
+	
 	void addOpenQuestionToTableInUi(OpenQ question);
-	void addAmericanQuestionToComboBoxInUi(AmericanQ question);
 	void addAmericanQuestionToTableInUi(AmericanQ question);
-	void addAmericanAnswerToTableInUi(AmericanQ answer);
-	
-	void removeQuestionFromComboBoxInUi(int id, String question);
-	void updateQuestionInComboBoxInUi(int id, String question);
-	
 	void registerListener(MainUiListener listener);
 	void errorMessageUi(String msg);
+	void addQuestionsToTable(List<Question> questions);
+	void savedAllQuestionsMessageBox(String fileName, int amountOfQuestions);
+	void addedAmericanAnswerPopUpDialog(AmericanQ question);
 }
+

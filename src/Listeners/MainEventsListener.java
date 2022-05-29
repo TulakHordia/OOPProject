@@ -1,18 +1,23 @@
 package Listeners;
 
+import java.io.File;
+import java.util.List;
+
 import Model.AmericanAnswers;
 import Model.AmericanQ;
 import Model.OpenQ;
 import Model.Question;
-import javafx.collections.ObservableList;
 
 public interface MainEventsListener {
 	
-	void addedOpenQuestionToModelEvent(String question, String answer);
 	void addedOpenQuestionToModelEventObject(OpenQ question);
 	void addedAmericanQuestionToModelEventObject(AmericanQ question);
-	void addedAmericanQuestionToModelEvent(AmericanQ question);
-	void addedAmericanAnswerToAmericanQuestionModelEvent(AmericanQ aN);
-	void updatedQuestionInModelEvent(int id, String question);
-	void removedQuestionFromModelEvent(int id, String question);
+	void deletedAmericanAnswer(AmericanAnswers aN, AmericanQ question);
+	void importedFromBinaryFile(List<Question> questions);
+	void savedAllQuestionsToFile(String fileName, int amountOfQuestions);
+	void createdAutoExam(int amount, List<Question> exam);
+	void addedAmericanAnswerToQuestion(AmericanQ question);
+	void copiedAnExistingExam(File fileName);
+	void savedToBinaryFileOnExit();
 }
+

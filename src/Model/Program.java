@@ -231,12 +231,12 @@ public class Program extends Application implements ProgramMethods  {
 				
 			case 12:
 				
-				manage.questionsList();
+				questionsList();
 				break;
 				
 			case 13:
 				
-				manage.saveToBinaryFile();
+				manage.saveToBinaryFileAutomatically();
 				System.out.println("Saving and exiting...");
 				System.exit(0);
 				break;
@@ -250,13 +250,13 @@ public class Program extends Application implements ProgramMethods  {
 			if(resume=='y'||resume=='Y') {
 			}else
 			{
-				manage.saveToBinaryFile();
+				manage.saveToBinaryFileAutomatically();
 				System.out.println("Exiting program...");
 				System.exit(0);
 			}
 		}
 		while(choice != 13);
-		manage.saveToBinaryFile();
+		manage.saveToBinaryFileAutomatically();
 		System.out.println("Exiting program...Thank you!");
 		input.close();
 		}
@@ -265,11 +265,11 @@ public class Program extends Application implements ProgramMethods  {
 		Program p = new Program();
 		p.managingMethod();
 		launch(args);
-		if (!p.importAndSaveQuestionsList()) {
-			p.autoImportQuestions();
-		}
-
-		p.mainMenu();
+//		if (!p.importAndSaveQuestionsList()) {
+//			p.autoImportQuestions();
+//		}
+//
+//		p.mainMenu();
 		}
 	
 	@Override
@@ -278,7 +278,7 @@ public class Program extends Application implements ProgramMethods  {
 		System.out.println("Type 1 if yes, 2 if no.");
 		int qChoice = manage.safeNextInt(input);
 		if (qChoice == 1) {
-			manage.questionsList();
+			questionsList();
 			return true;
 		}
 		else {
@@ -301,7 +301,7 @@ public class Program extends Application implements ProgramMethods  {
 		} catch (FileNotFoundException e) {
 			System.out.println("questions.ser file does not exist.");
 			System.out.println("Importing pre-made questions list.");
-			manage.questionsList();
+			questionsList();
 		}
 	}
 	
@@ -326,7 +326,112 @@ public class Program extends Application implements ProgramMethods  {
 		
 		System.out.println("\nEnter your choice: ");
 	}
+	
+	public void questionsList() {
+		//General questions
+		String quest1 = "First question";
+		String quest2 = "Second question";
+		String quest3 = "Third question";
+		String quest4 = "Fourth question";
+		String quest5 = "Fifth question";
+		String quest6 = "Sixth question";
+		String quest7 = "Seventh question";
+		String quest8 = "Eighth question";
+		
+		//Just answers
+		String ans1 = "First answer";
+		String ans2 = "Second answer";
+		String ans3 = "Another answer";
+		String ans4 = "And another one";
+		String ans5 = "Fifth answer";
+		String ans6 = "Sixth answer";
+		String ans7 = "Seventh answer";
+		String ans8 = "Eighth answer";
+		
+		//False answers
+		String ansF1 = "False answer #1";
+		String ansF2 = "False answer #2";
+		String ansF3 = "False answer #3";
+		String ansF4 = "False answer #4";
+		String ansF5 = "False answer #5";
+		
+		//Open answers
+		String openAns = "First open answer";
+		String openAns2 = "Second open answer has many characters aswell";
+		String openAns3 = "Third open answer is a very very very very very very very long one";
+		String openAns4 = "Fourth open answer is pretty short";
+		
+		//Create new american question objects
+		AmericanQ ameriTest1 = new AmericanQ(quest1);
+		AmericanQ ameriTest2 = new AmericanQ(quest2);
+		AmericanQ ameriTest3 = new AmericanQ(quest3);
+		AmericanQ ameriTest4 = new AmericanQ(quest4);
+		
+		//Add american questions
+		manage.addAmericanQuestion(ameriTest1);
+		manage.addAmericanQuestion(ameriTest2);
+		manage.addAmericanQuestion(ameriTest3);
+		manage.addAmericanQuestion(ameriTest4);
+		
+		//American answers
+		AmericanAnswers ameriAns = new AmericanAnswers(ans1, true);
+		AmericanAnswers ameriAns2 = new AmericanAnswers(ans2, true);
+		AmericanAnswers ameriAns3 = new AmericanAnswers(ans3, true);
+		AmericanAnswers ameriAns4 = new AmericanAnswers(ans4, true);
+		AmericanAnswers ameriAns5 = new AmericanAnswers(ans5, true);
+		AmericanAnswers ameriAns6 = new AmericanAnswers(ans6, true);
+		AmericanAnswers ameriAns7 = new AmericanAnswers(ans7, true);
+		AmericanAnswers ameriAns8 = new AmericanAnswers(ans8, true);
+		AmericanAnswers ameriAnsF1 = new AmericanAnswers(ansF1, false);
+		AmericanAnswers ameriAnsF2 = new AmericanAnswers(ansF2, false);
+		AmericanAnswers ameriAnsF3 = new AmericanAnswers(ansF3, false);
+		AmericanAnswers ameriAnsF4 = new AmericanAnswers(ansF4, false);
+		AmericanAnswers ameriAnsF5 = new AmericanAnswers(ansF5, false);
+		
+		//More than one is correct:
+		ameriTest1.addAnswer(ameriAns);
+		ameriTest1.addAnswer(ameriAns2);
+		ameriTest1.addAnswer(ameriAns3);
+		ameriTest1.addAnswer(ameriAns4);
+		ameriTest1.addAnswer(ameriAnsF1);
+		ameriTest1.addAnswer(ameriAnsF4);
+		manage.addBuiltInAnswers(ameriTest1);
+		
+		//All false
+		ameriTest2.addAnswer(ameriAnsF1);
+		ameriTest2.addAnswer(ameriAnsF2);
+		ameriTest2.addAnswer(ameriAnsF3);
+		ameriTest2.addAnswer(ameriAnsF4);
+		ameriTest2.addAnswer(ameriAnsF5);
+		manage.addBuiltInAnswers(ameriTest2);
 
+		
+		//Only one question is true
+		ameriTest3.addAnswer(ameriAns5);
+		ameriTest3.addAnswer(ameriAnsF1);
+		ameriTest3.addAnswer(ameriAnsF2);
+		ameriTest3.addAnswer(ameriAnsF3);
+		ameriTest3.addAnswer(ameriAnsF4);
+		manage.addBuiltInAnswers(ameriTest3);
+
+		
+		//more than one is correct #2
+		ameriTest4.addAnswer(ameriAns6);
+		ameriTest4.addAnswer(ameriAns7);
+		ameriTest4.addAnswer(ameriAns8);
+		ameriTest4.addAnswer(ameriAnsF3);
+		ameriTest4.addAnswer(ameriAnsF4);
+		manage.addBuiltInAnswers(ameriTest4);
+
+		
+		//Open questions + Answers
+		manage.addOpenQuestions(quest5, openAns);
+		manage.addOpenQuestions(quest6, openAns2);
+		manage.addOpenQuestions(quest7, openAns3);
+		manage.addOpenQuestions(quest8, openAns4);
+	}
+
+	@SuppressWarnings("unused")
 	public void start(Stage primaryStage) throws Exception {
 		this.manage = new Manager();
 		AbstractMainView aev = new QuestionView(primaryStage);

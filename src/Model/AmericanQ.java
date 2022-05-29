@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 public class AmericanQ extends Question implements Serializable {
 
 	NewSet<AmericanAnswers> Answers = new NewSet<AmericanAnswers>();
@@ -40,9 +42,15 @@ public class AmericanQ extends Question implements Serializable {
 		}
 	}
 	
-	
-	
-	
+	public boolean deleteAmericanAnswer(AmericanAnswers aN) {
+		if (Answers.remove(aN)) {
+			answersNum--;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 	public void updateAnswer(int index, String answer) {
 		Answers.get(index-1).setAnswer(answer);
@@ -55,7 +63,7 @@ public class AmericanQ extends Question implements Serializable {
 		for (int i = 0; i < Answers.size(); i++) {
 			if (Answers.get(i) != null) {
 				sb.append(" Answer num: [" + (i+1) + "] " + Answers.get(i).toString());
-				sb.append(" [Correct or not]: " + Answers.get(i).IsTrue() + "\n");
+				sb.append(" [Correct or not]: " + Answers.get(i).getIsTrue() + "\n");
 			}
 		}
 		return sb.toString();
