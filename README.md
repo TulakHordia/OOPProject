@@ -33,19 +33,13 @@ Can import & export files in and out of the program.
 Can opt into creating an automatic exam with set amount of questions or a manual one by selecting them in the table.
 Functions to manually create an exam with the available questions or rather let the program create one for you.
 
-* Contains a 'Program' main class to request user input for the various options and implemented methods from 'ProgramMethods'.
-* A 'Manager' class to manage all the requests coming from the 'Program' main class.
-* 'Question' abstract class to contain all the data & info regarding the questions.
-* 'AmericanQ' along with 'OpenQ' classes to store all sub-data of 'Question' class.
-* 'AmericanAnswers' has all the available answers to the 'AmericanQ' questions.
-* 'QuestionComparator' sorts the requested array by the total answer length.
-* 'ProgramMethods' is an interface used to hand-out methods for the 'Program' class.
+* Project consists of 4 Packages working in an MVC module.
+* Model, View, Controller and Listeners.
+* Listeners listen to changes in the View and Model classes and update the Controller accordingly.
+* View package consists of an Abstract interface for every GUI stage.
 
 ## Work to be done
-'What work needs to be done in order to add multiple-subjects into the code?'
-Basically I only need to add a new 'Class' for each subject so I can add the question-objects into the relevant subject class type.
-
-
+Nothing, project is done, good luck to us. :)
 
 ### Thank you for using the program.
 ### Best regards,
