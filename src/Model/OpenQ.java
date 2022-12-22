@@ -1,6 +1,8 @@
-package id319520425;
+package Model;
 
-public class OpenQ extends Question {
+import java.io.Serializable;
+
+public class OpenQ extends Question implements Serializable {
 	
 	private String answer;
 	
@@ -11,7 +13,7 @@ public class OpenQ extends Question {
 	
 	@Override
 	public String toString() {
-		return "[" + getQuestionNumber() + "] Open Questions: \n" + getQuestion() + "\nThe answer: " + getAnswer() + "\n";
+		return getQuestionNumber() + ") Open Questions: \n" + getQuestion() + "\nThe answer: " + getAnswer() + "\n";
 	}
 
 	public String setAnswer() {

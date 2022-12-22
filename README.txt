@@ -2,33 +2,46 @@
 Creators Name: Benjamin Rain
 ID: 319520425
 
-* Part 1: Automatic/Manual exam creator.
-* Part 2:
-* Part 3:
-
+* Part 1: Hierarchy, Polymorphism, Object and Exceptions. [Done]
+* Part 2: Interfaces, files, generics [Done]
+* Part 3: GUI & MVC [Done]
 
 * <https://github.com/TulakHordia>
-* < >
-
 
 ## Table of contents
 
-> * [Object-Oriented Programming - Project / Repository Name]
->   * [About / Synopsis]
+> * [Object-Oriented Programming - Project / github.com/TulakHordia/OOPProject]
 >   * [Table of contents]
 >   * [Usage]
 >   * [Content]
->   * [Limitations]
->   * [Resources (Documentation and other links)]
 >   * [For known issues please refer to the known_issues file]
+
+## About / Synopsis
+Whole project is complete.
+A program used to create, edit and manipulate questions.
+Create exams automatically or even manually and save them into a .txt file.
+Import/Export binary files, save to .txt files.
+
 ## Usage
+Launch the program, everything else should be self-explanatory on how it works.
 
-### Content
+## Content
+Contains a way to add a new question + answer. (American or an Open one)
+Double clicking the questions table will enter "edit mode" and allow you to edit the question (by pressing Enter when done).
+Can see the Answers for an american question in a separate window.
+Can import & export files in and out of the program.
+Can opt into creating an automatic exam with set amount of questions or a manual one by selecting them in the table.
+Functions to manually create an exam with the available questions or rather let the program create one for you.
 
-Description, sub-modules organization...
+* Project consists of 4 Packages working in an MVC module.
+* Model, View, Controller and Listeners.
+* Listeners listen to changes in the View and Model classes and update the Controller accordingly.
+* View package consists of an Abstract interface for every GUI stage.
 
-### Limitations
+## Work to be done
+Nothing, project is done, good luck to us. :)
 
-Sample: <https://github.com/nuxeo-archives/nuxeo-features/tree/master/nuxeo-elasticsearch>
+### Thank you for using the program.
+### Best regards,
+### Benjamin Rain. :)
 
-## Resources (Documentation and other links)

@@ -1,8 +1,9 @@
-package id319520425;
+package Model;
 
-import java.util.Objects;
+import java.io.Serializable;
+import java.util.List;
 
-public abstract class Question {
+public abstract class Question implements Serializable {
 	
 	private static int questionNumCounter = 1;
 	private int questionNumber;
@@ -11,43 +12,31 @@ public abstract class Question {
 	public Question(String question) {
 		this.question = question;
 		questionNumber = questionNumCounter++;
-		
 	}
 
 	public int getQuestionNumber() {
 		return questionNumber;
 	}
 	
+	public void setQuestionNumber(List<Question> allQuestions) {
+		questionNumCounter = (allQuestions.size()+1);
+	}
+	
 	public String getQuestion() {
 		return question;
 	}
 	
-	public boolean setQuestion(String question) {
+	public void setQuestion(String question) {
 		this.question = question;
-		return true;
 	}
 	
 	public String printQuestionNumber() {
-		return "[" + questionNumber + "]" + toString();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Question other = (Question) obj;
-		return Objects.equals(question, other.question);
+		return questionNumber + ")" + toString();
 	}
 	
 	@Override
 	public String toString() {
 		return question + "\n";
 	}
+	
 }
