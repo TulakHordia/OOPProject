@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="27e39ad3-0c19-4191-87b3-34e1e1789e70" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/OOPProject.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/Manager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/NewSet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/Program.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/ProgramMethods.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/QuestionComparator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/UiElements.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OOPProject.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/QuestionView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/list-check.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.project" beforeDir="false" afterPath="$PROJECT_DIR$/.project" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/application/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/application/application.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/id319520425/AmericanAnswers.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/id319520425/AmericanQ.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/id319520425/Manager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/id319520425/OpenQ.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/id319520425/Program.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/id319520425/Question.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/module-info.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/application/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/application/application.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/id319520425/AmericanAnswers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/AmericanAnswers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/id319520425/AmericanQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/AmericanQ.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/id319520425/Manager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/id319520425/OpenQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/OpenQ.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/id319520425/Program.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/id319520425/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Question.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/module-info.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedIndex" value="2" />
+  </component>
+  <component name="ProjectId" id="26pdrEYtxYBAavNAfJFYAkUeYKa" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/geshe/Dropbox/Java/javafx-sdk-19/lib&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Benjamin\Dropbox\Java\OOPProject\src" />
+      <recent name="C:\Users\Benjamin\Dropbox\Java\OOPProject\src\id319520425" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Benjamin\Dropbox\Java\OOPProject\src" />
+      <recent name="C:\Users\Benjamin\Dropbox\Java\OOPProject\src\id319520425" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Program" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="openjdk-19" />
+      <option name="MAIN_CLASS_NAME" value="Model.Program" />
+      <module name="OOPProject" />
+      <option name="VM_PARAMETERS" value="--module-path &quot;C:\javafx-sdk-19\lib&quot; --add-modules javafx.controls,javafx.fxml" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Program" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="27e39ad3-0c19-4191-87b3-34e1e1789e70" name="Changes" comment="" />
+      <created>1648124657438</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1648124657438</updated>
+      <workItem from="1648124658707" duration="524000" />
+      <workItem from="1651513231586" duration="933000" />
+      <workItem from="1651518601818" duration="456000" />
+      <workItem from="1651581300222" duration="223000" />
+      <workItem from="1651581537612" duration="408000" />
+      <workItem from="1651581983292" duration="643000" />
+      <workItem from="1651582855488" duration="6010000" />
+      <workItem from="1652357204264" duration="1387000" />
+      <workItem from="1653425374865" duration="619000" />
+      <workItem from="1666511818570" duration="1463000" />
+      <workItem from="1666521624957" duration="1111000" />
+      <workItem from="1666559218639" duration="603000" />
+      <workItem from="1666560348574" duration="6000" />
+      <workItem from="1666560362076" duration="50000" />
+      <workItem from="1666702204762" duration="260000" />
+      <workItem from="1666703972928" duration="45000" />
+      <workItem from="1667634622483" duration="670000" />
+      <workItem from="1667813808947" duration="633000" />
+      <workItem from="1667836314870" duration="608000" />
+      <workItem from="1668009580561" duration="252000" />
+      <workItem from="1668011568411" duration="3132000" />
+      <workItem from="1668877166192" duration="106000" />
+      <workItem from="1669803243538" duration="63000" />
+      <workItem from="1669824057666" duration="3669000" />
+      <workItem from="1670420834753" duration="361000" />
+      <workItem from="1670428950873" duration="4741000" />
+      <workItem from="1670433845842" duration="885000" />
+      <workItem from="1670501892511" duration="5844000" />
+      <workItem from="1670507811883" duration="488000" />
+      <workItem from="1670767422036" duration="12911000" />
+      <workItem from="1670843201904" duration="625000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.configurationType" implementationName="Application" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Model/AmericanAnswers.java</url>
+          <line>64</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Model/AmericanQ.java</url>
+          <line>76</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
