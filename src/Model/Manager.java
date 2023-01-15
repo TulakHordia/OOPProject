@@ -30,24 +30,15 @@ public class Manager {
 	List<File> allExistingExams;
 	List<File> examsNoDuplicatesList;
 
-	//Collections.
-	TreeSet<Question> treeSet = new TreeSet<Question>();
-	List<Question> newArrayList = new ArrayList<Question>();
-
 	private Vector<MainEventsListener> mainListener = new Vector<MainEventsListener>();
 
 	@SuppressWarnings("unused")
 	private int size;
 	private int examNum;
-	private Iterator mainIterator;
 	private SimpleStringProperty name;
 	private DatabaseIntegration DBIntegration;
 
 	Scanner input = new Scanner(System.in);
-
-	public SimpleStringProperty nameProperty() {
-		return name;
-	}
 
 	public Manager() throws SQLException, ClassNotFoundException {
 		allQuestions = new ArrayList<Question>();
@@ -119,12 +110,6 @@ public class Manager {
 		}
 	}
 
-	private void fireCopiedAnExam(File fileName) {
-		for (MainEventsListener l : mainListener) {
-			l.copiedAnExistingExam(fileName);
-		}
-	}
-
 	private void fireSavedToBinaryOnExit() {
 		for (MainEventsListener l : mainListener) {
 			l.savedToBinaryFileOnExit();
@@ -161,7 +146,6 @@ public class Manager {
 		allQuestions.add(theQuestion);
 		fireAddOpenQuestion(theQuestion);
 		if (DBIntegration.checkIfConnectionIsUp()) {
-			System.out.println("do i even get here lmao");
 			DBIntegration.addOpenQuestionToDatabase(theQuestion);
 			System.out.println("Open Question added to Database.");
 		}
@@ -191,12 +175,11 @@ public class Manager {
 
 	public void addAmericanAnswerToQuestion(AmericanQ question, String answer, boolean isTrue) throws SQLException {
 		AmericanAnswers aN = new AmericanAnswers(answer, isTrue);
-		System.out.println(question.addAnswer(aN));
 		fireAddAmericanAnswerToQuestion(question);
-//		if (DBIntegration.checkIfConnectionIsUp()) {
-//			DBIntegration.addAmericanAnswersToDatabase(question, aN);
-//			System.out.println("Added American Answer.");
-//		}
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.addAmericanAnswersToDatabase(question, aN);
+			System.out.println("Added American Answer to Database.");
+		}
 	}
 
 	public void sendAnswerToDatabase(AmericanQ aQuest, AmericanAnswers aN) throws SQLException {
@@ -356,19 +339,6 @@ public class Manager {
 		for (int i = 0; i < allQuestions.size(); i++) {
 			if (allQuestions.get(i) instanceof OpenQ) {
 				System.out.println(allQuestions.get(i));
-			}
-		}
-	}
-
-	public void printAmericanAnswers(int questionNum) {
-		System.out.println("American Answers for questions number: " + questionNum);
-		Question quest = getQuestionById(questionNum);
-		if (quest instanceof AmericanQ) {
-			AmericanQ aQ = (AmericanQ) quest;
-			for (int i = 0; i < 10; i++) {
-				if (aQ.getAnswers(i) != null) {
-					System.out.println("[" + (i + 1) + "] " + aQ.getAnswers(i));
-				}
 			}
 		}
 	}
@@ -810,22 +780,8 @@ public class Manager {
 		System.out.println("Sorted all questions array.");
 	}
 
-	public OpenQ getOpenQuestions() {
-		for (Question l : allQuestions) {
-			if (l instanceof OpenQ) {
-				OpenQ oQ = (OpenQ) l;
-				return oQ;
-			}
-		}
-		return null;
-	}
-
 	public int getAllQuestionSize() {
 		return allQuestions.size();
-	}
-
-	public Question getAllQuestions(int index) {
-		return allQuestions.get(index);
 	}
 
 	public void questionsList() throws SQLException, ClassNotFoundException {
@@ -969,6 +925,14 @@ public class Manager {
 
 	public void dropOldTablesToManager() throws SQLException {
 		DBIntegration.dropOldTables();
+	}
+
+	public void createNewSchemaFromUi() throws SQLException {
+		DBIntegration.createNewSchema();
+	}
+
+	public void dropSchemaFromUi() throws SQLException {
+		DBIntegration.dropWholeSchema();
 	}
 }
 

@@ -13,12 +13,7 @@ public class DatabaseIntegration {
     //SQL Variables
     private ResultSet resultSet;
     private Connection connectObj;
-    private Statement state;
     private PreparedStatement pState;
-
-    //Question variables.
-    private int questionID;
-    private int answerID;
 
     public DatabaseIntegration() throws SQLException, ClassNotFoundException {
         input = new Scanner(System.in);
@@ -37,6 +32,13 @@ public class DatabaseIntegration {
         } catch (ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Error connecting to the SQL server.\nClass not found.");
         }
+    }
+
+    public void createNewSchema() throws SQLException {
+        //create schema
+        pState = connectObj.prepareStatement("create schema questions;");
+        pState.executeUpdate();
+        JOptionPane.showMessageDialog(null, "Schema 'questions' created");
     }
 
     public void createNewTables() throws SQLException {
@@ -62,7 +64,7 @@ public class DatabaseIntegration {
         pState = connectObj.prepareStatement("CREATE TABLE exams_openquestions ( examID INT NOT NULL AUTO_INCREMENT, openQuestionsID INT NOT NULL, PRIMARY KEY (examID, openQuestionsID)," +
                 "FOREIGN KEY (examID) REFERENCES exams(examID), FOREIGN KEY (openQuestionsID) REFERENCES openquestions(questionID) ) ENGINE = InnoDB;");
         pState.executeUpdate();
-        JOptionPane.showMessageDialog(null, "Tables Created");
+        JOptionPane.showMessageDialog(null, "Tables created");
     }
 
     public void dropOldTables() throws SQLException {
@@ -88,7 +90,14 @@ public class DatabaseIntegration {
         pState.executeUpdate();
         pState = connectObj.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
         pState.executeUpdate();
-        JOptionPane.showMessageDialog(null, "Tables Dropped");
+        JOptionPane.showMessageDialog(null, "Tables dropped");
+    }
+
+    void dropWholeSchema() throws SQLException {
+        //Drop schema
+        pState = connectObj.prepareStatement("drop schema questions;");
+        pState.executeUpdate();
+        JOptionPane.showMessageDialog(null, "Schema 'questions' dropped");
     }
 
     public boolean checkIfConnectionIsUp() throws SQLException {
@@ -97,16 +106,6 @@ public class DatabaseIntegration {
 
     public void closeConnectionInstant() throws SQLException {
         connectObj.close();
-    }
-    public void closeConnectionChoice() throws SQLException {
-        System.out.println("Do you want to close the connection?\nPress 1 for yes.\n");
-        int choice = input.nextInt();
-        if (choice == 1) {
-            connectObj.close();
-        }
-        else {
-            System.out.println("Did not close connection.\nConnection still open.");
-        }
     }
 
     public ResultSet getResultSet() {
@@ -212,7 +211,6 @@ public class DatabaseIntegration {
                 int test = resultSet.getInt(1);
                 System.out.println(test);
                 String query = "DELETE FROM AmericanQuestions_AmericanAnswers WHERE (answerID='" + test + "' and questionID='" + aQuest.getQuestionNumber() + "');";
-                //String query = "DELETE FROM AmericanQuestions_AmericanAnswers WHERE (answerID='" + test + "');";
                 pState = connectObj.prepareStatement(query);
                 pState.executeUpdate();
 

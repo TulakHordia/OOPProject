@@ -1,6 +1,5 @@
 package View;
 
-import java.awt.*;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -88,7 +87,6 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	TableColumn<OpenQ, String> questionCol;
 	TableColumn<OpenQ, String> answerCol;
 	TableColumn<AmericanQ, String> americanQuestionCol;
-	TableColumn<AmericanAnswers, Object> americanAnswerCol;
 
 	Separator verticalSep1;
 	Separator verticalSep2;
@@ -319,9 +317,11 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 		gpRoot.add(closeDatabaseConnection(), 6, 4);
 		gpRoot.add(loadDataFromSqlButton(), 6, 5);
 		gpRoot.add(horizontalSep1, 6, 6);
-		gpRoot.add(createTables(), 6, 7);
-		gpRoot.add(dropTables(), 6, 8);
-		gpRoot.add(horizontalSep2, 6, 9);
+		gpRoot.add(createSchemaButton(), 6, 7);
+		gpRoot.add(dropSchemaButton(), 6, 8);
+		gpRoot.add(createTablesButton(), 6, 9);
+		gpRoot.add(dropTablesButton(), 6, 10);
+		gpRoot.add(horizontalSep2, 6, 11);
 		//Separator #2
 		gpRoot.add(verticalSep2, 7, 0, 1, GridPane.REMAINING);
 		//Exit button
@@ -336,17 +336,10 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	
 	@SuppressWarnings("unchecked")
 	private void createTable() throws SQLException {
-
-		Connection connectSQL = DBIntegration.getConnection();
-		resultSet = DBIntegration.getResultSet();
-		String OQTable = "SELECT * from openquestions";
-		resultSet = connectSQL.createStatement().executeQuery(OQTable);
 		int width = 500;
 		int height = 500;
 		int minWidth = 100;
 
-		String AQTable = "SELECT * from americanquestions";
-		resultSet = connectSQL.createStatement().executeQuery(AQTable);
 		//AmericanQuestions Column
 		americanQuestionCol = new TableColumn("American Questions");
 		americanQuestionCol.setSortable(false);
@@ -658,26 +651,12 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 				else {
 					for (MainUiListener l : questUiListeners) {
 						AmericanQ aW = americanQuestionTable.getSelectionModel().getSelectedItem();
-						System.out.println("TEST QUESTION NUMBER: " + aW.getQuestionNumber());
-						String[] options = { "SQL", "Code"};
-						var selection = JOptionPane.showOptionDialog(null, "Load from SQL or code?", "Load answers...", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION, null, options, options[1]);
-						if (selection == 0) {
-							try {
-								l.openAnswersWindowSQL(aW, stage);
-							} catch (SQLException e) {
-								JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
-							} catch (ClassNotFoundException e) {
-								errorMessageUi(e.getMessage());
-							}
-						}
-						if (selection == 1) {
-							try {
-								l.openAnswersWindowCode(aW, stage);
-							} catch (SQLException e) {
-								JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
-							} catch (ClassNotFoundException e) {
-								errorMessageUi(e.getMessage());
-							}
+						try {
+							l.openAnswersWindowSQL(aW, stage);
+						} catch (SQLException e) {
+							JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+						} catch (ClassNotFoundException e) {
+							errorMessageUi(e.getMessage());
 						}
 					}
 				}
@@ -940,7 +919,27 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 		return loadData;
 	}
 
-	public Button createTables() {
+	public Button createSchemaButton() {
+		Button createSchema = new Button();
+		createSchema.setText("Create Schema");
+		createSchema.setMinSize(130, 25);
+		createSchema.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				for (MainUiListener l : questUiListeners) {
+					try {
+						l.createNewSchema();
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
+			}
+		});
+		return createSchema;
+	}
+
+	public Button createTablesButton() {
 		Button createTable = new Button();
 		createTable.setText("Create Tables");
 		createTable.setMinSize(130, 25);
@@ -948,19 +947,39 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 
 			@Override
 			public void handle(MouseEvent event) {
-					for (MainUiListener l : questUiListeners) {
-						try {
-							l.createNewTables();
-						} catch (SQLException e) {
-							JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
-						}
+				for (MainUiListener l : questUiListeners) {
+					try {
+						l.createNewTables();
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
 					}
+				}
 			}
 		});
 		return createTable;
 	}
 
-	public Button dropTables() {
+	public Button dropSchemaButton() {
+		Button dropSchema = new Button();
+		dropSchema.setText("Drop Schema");
+		dropSchema.setMinSize(130, 25);
+		dropSchema.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				for (MainUiListener l : questUiListeners) {
+					try {
+						l.dropSchema();
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
+			}
+		});
+		return dropSchema;
+	}
+
+	public Button dropTablesButton() {
 		Button dropTable = new Button();
 		dropTable.setText("Drop Tables");
 		dropTable.setMinSize(130, 25);

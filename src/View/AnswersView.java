@@ -44,7 +44,6 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 	private GridPane gp;
 	private AmericanQ aQuest;
 	private Vector<MainUiListener> questUiListeners = new Vector<MainUiListener>();
-	ObservableList<AmericanAnswers> answers;
 	private Label doubleClickValueToEdit;
 	private Label titleText;
 	private Label selectToDelete;
@@ -108,7 +107,6 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 						ansNum = i;
 					}
 				}
-				//String oldAnswer = event.getTableView().getItems().get(event.getTablePosition().getRow()).getAnswer();
 				event.getTableView().getItems().get(event.getTablePosition().getRow()).setAnswer(event.getNewValue());
 				for (MainUiListener l : questUiListeners) {
 					String newAnswer = event.getTableView().getItems().get(event.getTablePosition().getRow()).getAnswer();
@@ -165,7 +163,6 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 				for (MainUiListener l : questUiListeners) {
 					try {
 						l.deleteAnswer(answersTable.getSelectionModel().getSelectedItem(), aQuest);
-						answers.remove(answersTable.getSelectionModel().getSelectedItem());
 					} catch (SQLException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
 					}
@@ -194,12 +191,9 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 		try (ResultSet resultSet1 = pState.executeQuery(getAnswers)) {
 			while (resultSet1.next()) {
 				AmericanAnswers aW = new AmericanAnswers(resultSet1.getString("answer"), resultSet1.getBoolean("isTrue"));
-				//answers.add(aW);
 				answersTable.getItems().add(aW);
 			}
 		}
-
-		//answersTable.setItems(answers);
 	}
 
 	@Override

@@ -259,16 +259,6 @@ public class MainController implements MainEventsListener, MainUiListener  {
 	}
 
 	@Override
-	public void createNewTables() throws SQLException {
-		manModel.createNewTablesToManager();
-	}
-
-	@Override
-	public void dropOldTables() throws SQLException {
-		manModel.dropOldTablesToManager();
-	}
-
-	@Override
 	public void saveToBinaryFileOnExit() throws FileNotFoundException, IOException {
 		manModel.saveToBinaryFileAutomatically();
 	}
@@ -293,6 +283,16 @@ public class MainController implements MainEventsListener, MainUiListener  {
 	}
 
 	@Override
+	public void createNewSchema() throws SQLException {
+		manModel.createNewSchemaFromUi();
+	}
+
+	@Override
+	public void dropSchema() throws SQLException {
+		manModel.dropSchemaFromUi();
+	}
+
+	@Override
 	public void closedConnectionToDatabase() {
 		questView.closedConnectionToDatabaseToUiUpdate();
 	}
@@ -314,7 +314,6 @@ public class MainController implements MainEventsListener, MainUiListener  {
 		ansView = new AnswersView(newStage);
 		MainController(ansView);
 		ansView.loadAnswersFromDatabaseToUi(aW);
-		//ansView.loadAnswersIntoTable(aW);
 	}
 
 	@Override
@@ -323,7 +322,16 @@ public class MainController implements MainEventsListener, MainUiListener  {
 		newStage.initOwner(parent);
 		ansView = new AnswersView(newStage);
 		MainController(ansView);
-		//ansView.loadAnswersFromDatabaseToUi(aW);
 		ansView.loadAnswersIntoTable(aW);
+	}
+
+	@Override
+	public void createNewTables() throws SQLException {
+		manModel.createNewTablesToManager();
+	}
+
+	@Override
+	public void dropOldTables() throws SQLException {
+		manModel.dropOldTablesToManager();
 	}
 }

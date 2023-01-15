@@ -48,9 +48,8 @@ public interface MainUiListener {
 	void dropOldTables() throws SQLException;
 	void closeDatabaseConnectionClick() throws SQLException;
 	void establishConnectionToDatabase() throws SQLException, ClassNotFoundException;
-
-
-
+	void createNewSchema() throws SQLException;
+	void dropSchema() throws SQLException;
 }
 
 
