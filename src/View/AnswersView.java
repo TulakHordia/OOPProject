@@ -1,5 +1,9 @@
 package View;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -7,7 +11,12 @@ import javax.swing.JOptionPane;
 import Listeners.MainUiListener;
 import Model.AmericanAnswers;
 import Model.AmericanQ;
+import Model.DatabaseIntegration;
 import Model.UiElements;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -26,13 +35,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class AnswersView extends GridPane implements AbstractAnswersView, UiElements {
-	
+
+	private DatabaseIntegration DBIntegration;
 	private Scene scene;
 	private GridPane gp;
 	private AmericanQ aQuest;
 	private Vector<MainUiListener> questUiListeners = new Vector<MainUiListener>();
+	ObservableList<AmericanAnswers> answers;
 	private Label doubleClickValueToEdit;
 	private Label titleText;
 	private Label selectToDelete;
@@ -41,7 +53,9 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 	private TableColumn<AmericanAnswers, String> answersBooleanColumn; 
 
 	
-	public AnswersView(Stage stage) {
+	public AnswersView(Stage stage) throws SQLException, ClassNotFoundException {
+		DBIntegration = new DatabaseIntegration();
+
 		stage.setTitle("Answers");
 		stage.setWidth(340);
 		stage.setHeight(600);
@@ -64,8 +78,13 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void createTable() {
+	private void createTable() throws SQLException {
+		Connection connectSQL = DBIntegration.getConnection();
+		ResultSet resultSet1 = DBIntegration.getResultSet();
+		String AATable = "SELECT * from americananswers";
+		resultSet1 = connectSQL.createStatement().executeQuery(AATable);
 		int width = 150;
+
 		this.answersTable = new TableView<AmericanAnswers>();
 		this.answersColumn = new TableColumn<AmericanAnswers, String>("Answers");
 		this.answersBooleanColumn = new TableColumn<AmericanAnswers, String>("True/False");
@@ -82,7 +101,23 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 
 			@Override
 			public void handle(CellEditEvent<AmericanAnswers, String> event) {
+				int ansNum = 0;
+				AmericanAnswers aW = answersTable.getSelectionModel().getSelectedItem();
+				for (int i = 0; i < aQuest.getAnswersNum(); i++) {
+					if (aQuest.getAnswers(i).getAnswer().equals(aW)) {
+						ansNum = i;
+					}
+				}
+				//String oldAnswer = event.getTableView().getItems().get(event.getTablePosition().getRow()).getAnswer();
 				event.getTableView().getItems().get(event.getTablePosition().getRow()).setAnswer(event.getNewValue());
+				for (MainUiListener l : questUiListeners) {
+					String newAnswer = event.getTableView().getItems().get(event.getTablePosition().getRow()).getAnswer();
+					try {
+						l.updateAmericanAnswerFromUi(newAnswer, ansNum);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
 			}
 		});
 		
@@ -100,7 +135,7 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 				}
 			}
 		});
-		
+
 		answersTable.getColumns().addAll(answersColumn,answersBooleanColumn);
 	}
 	
@@ -128,7 +163,12 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 			@Override
 			public void handle(MouseEvent event) {
 				for (MainUiListener l : questUiListeners) {
-					l.deleteAnswer(answersTable.getSelectionModel().getSelectedItem(), aQuest);
+					try {
+						l.deleteAnswer(answersTable.getSelectionModel().getSelectedItem(), aQuest);
+						answers.remove(answersTable.getSelectionModel().getSelectedItem());
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
 				}
 			}
 		});
@@ -142,6 +182,26 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 		aQuest = aW;
 	}
 
+	public void loadAnswersFromDatabaseToUi(AmericanQ aQ) throws SQLException {
+		aQuest = aQ;
+		Connection connectSQL = DBIntegration.getConnection();
+		PreparedStatement pState = connectSQL.prepareStatement("use questions;");
+		//answers = FXCollections.observableArrayList();
+		String getAnswers = "SELECT americananswers.answer, americananswers.isTrue " +
+				"FROM americanquestions_americananswers, americananswers " +
+				"WHERE americanquestions_americananswers.answerID = americananswers.answerID " +
+				"AND americanquestions_americananswers.questionID = '" + aQuest.getQuestionNumber() + "';";
+		try (ResultSet resultSet1 = pState.executeQuery(getAnswers)) {
+			while (resultSet1.next()) {
+				AmericanAnswers aW = new AmericanAnswers(resultSet1.getString("answer"), resultSet1.getBoolean("isTrue"));
+				//answers.add(aW);
+				answersTable.getItems().add(aW);
+			}
+		}
+
+		//answersTable.setItems(answers);
+	}
+
 	@Override
 	public void registerListener(MainUiListener listener) {
 		questUiListeners.add(listener);
@@ -153,7 +213,7 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 	}
 
 	@Override
-	public void deleteAmericanAnswerFromTable(AmericanAnswers aN) {
+	public void deleteAmericanAnswerFromTable(AmericanAnswers aN) throws SQLException {
 		answersTable.getItems().remove(aN);
 	}
 
@@ -186,7 +246,11 @@ public class AnswersView extends GridPane implements AbstractAnswersView, UiElem
 			@Override
 			public void handle(MouseEvent event) {
 				for (MainUiListener l : questUiListeners) {
-					l.handleCloseButtonAction(event, closeWindow);
+					try {
+						l.handleCloseButtonAction(event, closeWindow);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
 				}
 			}
 		});

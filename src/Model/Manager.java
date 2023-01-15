@@ -18,7 +18,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
-import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 import Listeners.MainEventsListener;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,15 +25,14 @@ import javafx.beans.property.SimpleStringProperty;
 public class Manager {
 
 	List<Question> allQuestions;
-	List<Question> manualExamArray;
+	ArrayList<Question> manualExamArray;
 	List<Question> autoExamArray;
 	List<File> allExistingExams;
 	List<File> examsNoDuplicatesList;
 
 	//Collections.
-	HashMap<String, Integer> hashMapSortedList;
-	Map<String, Integer> treeMap;
-	HashSet<String> hashSetList = new HashSet<String>();;
+	TreeSet<Question> treeSet = new TreeSet<Question>();
+	List<Question> newArrayList = new ArrayList<Question>();
 
 	private Vector<MainEventsListener> mainListener = new Vector<MainEventsListener>();
 
@@ -50,6 +48,30 @@ public class Manager {
 	public SimpleStringProperty nameProperty() {
 		return name;
 	}
+
+	public Manager() throws SQLException, ClassNotFoundException {
+		allQuestions = new ArrayList<Question>();
+		manualExamArray = new ArrayList<Question>();
+		autoExamArray = new ArrayList<Question>();
+		allExistingExams = new ArrayList<File>();
+		examsNoDuplicatesList = new ArrayList<File>();
+		DBIntegration = new DatabaseIntegration();
+
+		size = 0;
+		examNum = 1;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+		manualExamArray = new ArrayList<Question>(size);
+		for (int i = 0; i < size; i++) {
+			manualExamArray.add(i, null);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// UI & Listeners  ////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	public void registerListener(MainEventsListener listener) {
 		mainListener.add(listener);
@@ -79,7 +101,7 @@ public class Manager {
 		}
 	}
 
-	private void fireDeletedAmericanAnswer(AmericanAnswers aN, AmericanQ question) {
+	private void fireDeletedAmericanAnswer(AmericanAnswers aN, AmericanQ question) throws SQLException {
 		for (MainEventsListener l : mainListener) {
 			l.deletedAmericanAnswer(aN, question);
 		}
@@ -109,34 +131,21 @@ public class Manager {
 		}
 	}
 
-	public void addAmericanAnswerToQuestion(AmericanQ question, String answer, boolean isTrue) {
-		AmericanAnswers aN = new AmericanAnswers(answer, isTrue);
-		System.out.println(question.addAnswer(aN));
-		fireAddAmericanAnswerToQuestion(question);
-	}
-
-	public Manager() throws SQLException, ClassNotFoundException {
-		allQuestions = new ArrayList<Question>();
-		manualExamArray = new ArrayList<Question>();
-		autoExamArray = new ArrayList<Question>();
-		allExistingExams = new ArrayList<File>();
-		examsNoDuplicatesList = new ArrayList<File>();
-		DBIntegration = new DatabaseIntegration();
-
-		//Sorting.
-		hashMapSortedList = new HashMap<String, Integer>();
-
-		size = 0;
-		examNum = 1;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-		manualExamArray = new ArrayList<Question>(size);
-		for (int i = 0; i < size; i++) {
-			manualExamArray.add(i, null);
+	private void fireDeletedAmericanQuestion(AmericanQ aQuest) {
+		for (MainEventsListener l : mainListener) {
+			l.deletedAmericanQuestion(aQuest);
 		}
 	}
+
+	private void fireDeletedOpenQuestion(OpenQ oQuest) {
+		for (MainEventsListener l : mainListener) {
+			l.deletedOpenQuestion(oQuest);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////// Questions Manipulation  ////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	public boolean addOpenQuestions(String question, String answer) throws SQLException {
 		for (int i = 0; i < allQuestions.size(); i++) {
@@ -152,7 +161,9 @@ public class Manager {
 		allQuestions.add(theQuestion);
 		fireAddOpenQuestion(theQuestion);
 		if (DBIntegration.checkIfConnectionIsUp()) {
+			System.out.println("do i even get here lmao");
 			DBIntegration.addOpenQuestionToDatabase(theQuestion);
+			System.out.println("Open Question added to Database.");
 		}
 		System.out.println("Created question #" + (allQuestions.size()));
 		return true;
@@ -172,10 +183,27 @@ public class Manager {
 		fireAddAmericanQuestion(question);
 		if (DBIntegration.checkIfConnectionIsUp()) {
 			DBIntegration.addAmericanQuestionToDatabase(question);
-			System.out.println("Question added maybe?");
+			System.out.println("American Question added to Database.");
 		}
 		System.out.println("Created question #" + (allQuestions.size()));
 		return true;
+	}
+
+	public void addAmericanAnswerToQuestion(AmericanQ question, String answer, boolean isTrue) throws SQLException {
+		AmericanAnswers aN = new AmericanAnswers(answer, isTrue);
+		System.out.println(question.addAnswer(aN));
+		fireAddAmericanAnswerToQuestion(question);
+//		if (DBIntegration.checkIfConnectionIsUp()) {
+//			DBIntegration.addAmericanAnswersToDatabase(question, aN);
+//			System.out.println("Added American Answer.");
+//		}
+	}
+
+	public void sendAnswerToDatabase(AmericanQ aQuest, AmericanAnswers aN) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.addAmericanAnswersToDatabase(aQuest, aN);
+			System.out.println("Added American Answer.");
+		}
 	}
 
 	private Question getQuestionById(int questionNumber) {
@@ -183,7 +211,7 @@ public class Manager {
 	}
 
 	public String updateQuestion(int questionNumber, String question) {
-		Question quest = getQuestionById(questionNumber-1);
+		Question quest = getQuestionById(questionNumber - 1);
 		if (quest != null) {
 			quest.setQuestion(question);
 			return "Updated successfully.";
@@ -191,8 +219,32 @@ public class Manager {
 		return "Question does not exist.";
 	}
 
+	public void updateOpenQuestionFromUi(String theQuestion, int questNum) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.updateOpenQuestionInDatabase(theQuestion, questNum);
+		}
+	}
+
+	public void updateAmericanQuestionFromUi(String theQuestion, int questNum) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.updateAmericanQuestionInDatabase(theQuestion, questNum);
+		}
+	}
+
+	public void updateOpenAnswerFromUi(String theAns, int questNum) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.updateOpenAnswerInDatabase(theAns, questNum);
+		}
+	}
+
+	public void updateAmericanAnswerFromUi(String theAnswer, int ansNum) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.updateAmericanAnswerInDatabase(theAnswer, ansNum);
+		}
+	}
+
 	public String deleteAnswer(int questionNumber, int loc) {
-		Question quest = getQuestionById(questionNumber-1);
+		Question quest = getQuestionById(questionNumber - 1);
 		if (quest instanceof OpenQ) {
 			return "Cannot delete an answer from an open question.";
 		}
@@ -204,11 +256,30 @@ public class Manager {
 		return "Deleted successfully.";
 	}
 
-	public void deleteQuestion(int questionNumber) {
-		allQuestions.remove(questionNumber-1);
+	public void deleteQuestion(int questionNumber) throws SQLException {
+		allQuestions.remove(questionNumber - 1);
 	}
 
-	public void deleteAmericanAnswer(AmericanAnswers aN, AmericanQ question) {
+	public void deleteAmericanQuestion(AmericanQ aQuest) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.deleteAmericanQuestionFromDatabase(aQuest);
+		}
+		allQuestions.remove(aQuest);
+		fireDeletedAmericanQuestion(aQuest);
+	}
+
+	public void deleteOpenQuestion(OpenQ oQuest) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.deleteOpenQuestionFromDatabase(oQuest);
+		}
+		allQuestions.remove(oQuest);
+		fireDeletedOpenQuestion(oQuest);
+	}
+
+	public void deleteAmericanAnswer(AmericanAnswers aN, AmericanQ question) throws SQLException {
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			DBIntegration.deleteAmericanAnswerFromAQuestion(question, aN);
+		}
 		if (question.deleteAmericanAnswer(aN)) {
 			fireDeletedAmericanAnswer(aN, question);
 			System.out.println("Deleted answer " + aN.getAnswer());
@@ -216,7 +287,7 @@ public class Manager {
 	}
 
 	public String updateAnswer(int questionNumber, int loc, String newAnswer) {
-		Question quest = getQuestionById(questionNumber-1);
+		Question quest = getQuestionById(questionNumber - 1);
 		if (quest instanceof OpenQ) {
 			OpenQ open = (OpenQ) quest;
 			open.setCorrectAnswer(newAnswer);
@@ -230,6 +301,10 @@ public class Manager {
 		}
 		return "Updated successfully.";
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// Prints  /////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	public void printEverything() {
 		System.out.println("Printing all questions");
@@ -271,7 +346,7 @@ public class Manager {
 		System.out.println("-----American Questions-----");
 		for (int i = 0; i < allQuestions.size(); i++) {
 			if (allQuestions.get(i) instanceof AmericanQ) {
-				System.out.println((i+1)+") "+allQuestions.get(i).getQuestion());
+				System.out.println((i + 1) + ") " + allQuestions.get(i).getQuestion());
 			}
 		}
 	}
@@ -299,13 +374,13 @@ public class Manager {
 	}
 
 	public void write(String filename, List<Question> manualExamArray) throws IOException {
-		FileWriter fwQ = new FileWriter("Exams/"+"exam_"+examNum+"_"+filename+"_questions.txt");
-		FileWriter fwA = new FileWriter("Exams/"+"exam_"+examNum+"_"+filename+"_solution.txt");
+		FileWriter fwQ = new FileWriter("Exams/" + "exam_" + examNum + "_" + filename + "_questions.txt");
+		FileWriter fwA = new FileWriter("Exams/" + "exam_" + examNum + "_" + filename + "_solution.txt");
 		examNum++;
 
 		for (int i = 0; i < manualExamArray.size(); i++) {
 			if (manualExamArray.get(i) != null) {
-				fwQ.write("Question number: " + (i+1) + "\n" + manualExamArray.get(i).getQuestion()+"\n");
+				fwQ.write("Question number: " + (i + 1) + "\n" + manualExamArray.get(i).getQuestion() + "\n");
 			}
 		}
 
@@ -313,18 +388,18 @@ public class Manager {
 			if (manualExamArray.get(i) instanceof AmericanQ) {
 				AmericanQ aQ = (AmericanQ) manualExamArray.get(i);
 				fwA.write("\nQuestion: " + aQ.getQuestion() + "\n");
-				fwA.write("Answers for question number: " + (i+1) + "\n");
+				fwA.write("Answers for question number: " + (i + 1) + "\n");
 				for (int j = 0; j < aQ.getAnswersNum(); j++) {
 					if (aQ.getAnswers(j) != null) {
-						fwA.write(aQ.getAnswers(j).getAnswer()+" - "+aQ.getAnswers(j).getIsTrue()+"\n");
+						fwA.write(aQ.getAnswers(j).getAnswer() + " - " + aQ.getAnswers(j).getIsTrue() + "\n");
 					}
 				}
 			}
 			if (manualExamArray.get(i) instanceof OpenQ) {
 				OpenQ oQ = (OpenQ) manualExamArray.get(i);
 				fwA.write("\nQuestion: " + oQ.getQuestion() + "\n");
-				fwA.write("Answer for question number: " + (i+1) + "\n");
-				fwA.write(oQ.getAnswer()+"\n");
+				fwA.write("Answer for question number: " + (i + 1) + "\n");
+				fwA.write(oQ.getAnswer() + "\n");
 			}
 		}
 
@@ -342,28 +417,25 @@ public class Manager {
 		if (!check) {
 			if (allQuestions.size() == 0) {
 				JOptionPane.showMessageDialog(null, "No questions exist, cannot create an empty file");
-			}
-			else {
-				FileWriter fwAll = new FileWriter("Exams/"+fileName+".txt");
-				System.out.println("Created a new " + fileName +".txt"+ " File in Exams folder.");
+			} else {
+				FileWriter fwAll = new FileWriter("Exams/" + fileName + ".txt");
+				System.out.println("Created a new " + fileName + ".txt" + " File in Exams folder.");
 				for (int i = 0; i < allQuestions.size(); i++) {
-					fwAll.write("Question number: " + (i+1) + "\n" + allQuestions.get(i)+"\n");
+					fwAll.write("Question number: " + (i + 1) + "\n" + allQuestions.get(i) + "\n");
 				}
 				fireSavedAllQuestionsToFile(fileName, getAllQuestionSize());
 				fwAll.flush();
 				fwAll.close();
 			}
-		}
-		else {
+		} else {
 			if (allQuestions.size() == 0) {
 				JOptionPane.showMessageDialog(null, "No questions exist, cannot create an empty file");
-			}
-			else {
+			} else {
 				System.out.println("A 'questions' file already exists.");
 				System.out.println("Added all ");
-				FileWriter fwAll = new FileWriter("Exams/"+fileName+".txt", true);
+				FileWriter fwAll = new FileWriter("Exams/" + fileName + ".txt", true);
 				for (int i = 0; i < allQuestions.size(); i++) {
-					fwAll.write("Question number: " + (i+1) + "\n" + allQuestions.get(i)+"\n");
+					fwAll.write("Question number: " + (i + 1) + "\n" + allQuestions.get(i) + "\n");
 				}
 				fireSavedAllQuestionsToFile(fileName, getAllQuestionSize());
 				fwAll.flush();
@@ -374,13 +446,13 @@ public class Manager {
 
 	public void saveToBinaryFile(String fileName) throws IOException, FileNotFoundException {
 		Files.createDirectories(Paths.get("Data/"));
-		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("Data/"+fileName+".ser"));
+		ObjectOutputStream outFile = new ObjectOutputStream(new FileOutputStream("Data/" + fileName + ".ser"));
 		for (int i = 0; i < allQuestions.size(); i++) {
 			outFile.writeObject(allQuestions.get(i));
 		}
 		outFile.close();
-		JOptionPane.showMessageDialog(null, "Saved to: Data/"+fileName+".ser");
-		System.out.println("Saved to: Data/"+fileName+".ser");
+		JOptionPane.showMessageDialog(null, "Saved to: Data/" + fileName + ".ser");
+		System.out.println("Saved to: Data/" + fileName + ".ser");
 
 	}
 
@@ -394,29 +466,27 @@ public class Manager {
 			outFile.close();
 			fireSavedToBinaryOnExit();
 			System.out.println("Saved to: Data/questions.ser");
-		}
-		else {
+		} else {
 			JOptionPane.showMessageDialog(null, "Did not save as there were no questions in the data");
 		}
 	}
 
 	public void readFromBinaryFile(String fileName) throws IOException, FileNotFoundException, ClassNotFoundException {
-		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Data/"+fileName))){
+		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Data/" + fileName))) {
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
 			}
 		} catch (EOFException e) {
 			fireImportFromBinaryFile(allQuestions);
-			JOptionPane.showMessageDialog(null, "Imported from: "+fileName);
+			JOptionPane.showMessageDialog(null, "Imported from: " + fileName);
 			System.out.println("Imported data from " + fileName);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "File not found");
-			int input = JOptionPane.showConfirmDialog(null, "File not found"+"\nWould you like to type again?"+"\nMake sure name ends with .ser");
+			int input = JOptionPane.showConfirmDialog(null, "File not found" + "\nWould you like to type again?" + "\nMake sure name ends with .ser");
 			if (input == 0) {
 				String m = JOptionPane.showInputDialog("Enter filename:(ends with .ser)");
 				readFromBinaryFile(m);
-			}
-			else {
+			} else {
 				JOptionPane.showMessageDialog(null, "No file imported");
 			}
 			System.out.println("File " + fileName + " does not exist in the directory.");
@@ -425,7 +495,7 @@ public class Manager {
 	}
 
 	public void autoImportOnLaunch() throws ClassNotFoundException, IOException {
-		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Data/questions.ser"))){
+		try (ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("Data/questions.ser"))) {
 			while (true) {
 				allQuestions.add((Question) inFile.readObject());
 			}
@@ -439,9 +509,8 @@ public class Manager {
 		for (int i = 0; i < allQuestions.size(); i++) {
 			Question quest = null;
 			if (i == 0) {
-				quest = getQuestionById(i+1);
-			}
-			else {
+				quest = getQuestionById(i + 1);
+			} else {
 				quest = getQuestionById(i);
 			}
 			if (quest != null) {
@@ -473,13 +542,13 @@ public class Manager {
 	}
 
 	public void copyExistingExam(int copyChoice) throws IOException {
-		BufferedReader inputS = new BufferedReader(new FileReader(allExistingExams.get(copyChoice-1)));
-		FileWriter output = new FileWriter("Exams/"+"copy_of_"+allExistingExams.get(copyChoice-1).getName());
+		BufferedReader inputS = new BufferedReader(new FileReader(allExistingExams.get(copyChoice - 1)));
+		FileWriter output = new FileWriter("Exams/" + "copy_of_" + allExistingExams.get(copyChoice - 1).getName());
 		String count;
-		while ( (count = inputS.readLine()) != null ) {
-			output.write(count+"\n");
+		while ((count = inputS.readLine()) != null) {
+			output.write(count + "\n");
 		}
-		System.out.println("Created a copy of: " + allExistingExams.get(copyChoice-1).getName());
+		System.out.println("Created a copy of: " + allExistingExams.get(copyChoice - 1).getName());
 		output.flush();
 		output.close();
 		inputS.close();
@@ -489,10 +558,10 @@ public class Manager {
 		for (int i = 0; i < examsNoDuplicatesList.size(); i++) {
 			if (examsNoDuplicatesList.get(i).getName().equals(fileName.getName())) {
 				BufferedReader inputS = new BufferedReader(new FileReader(fileName));
-				FileWriter output = new FileWriter("Exams/"+"copy_of_"+examsNoDuplicatesList.get(i).getName());
+				FileWriter output = new FileWriter("Exams/" + "copy_of_" + examsNoDuplicatesList.get(i).getName());
 				String count;
-				while ( (count = inputS.readLine()) != null ) {
-					output.write(count+"\n");
+				while ((count = inputS.readLine()) != null) {
+					output.write(count + "\n");
 				}
 				JOptionPane.showMessageDialog(null, "Created a copy of: " + examsNoDuplicatesList.get(i).getName());
 				System.out.println("Created a copy of: " + examsNoDuplicatesList.get(i).getName());
@@ -521,11 +590,10 @@ public class Manager {
 		autoExamArray.clear();
 	}
 
-	public void sortAndPrintManualExamArray() throws IOException {
+	public void sortAndPrintManualExamArray() throws IOException, SQLException {
 		if (manualExamArray.isEmpty()) {
 			JOptionPane.showMessageDialog(null, "No questions added to the exam");
-		}
-		else {
+		} else {
 			sortByAnswerLength(manualExamArray);
 			for (int i = 0; i < manualExamArray.size(); i++) {
 				if (manualExamArray.get(i) != null) {
@@ -539,6 +607,7 @@ public class Manager {
 					counter++;
 				}
 			}
+			DBIntegration.saveManualExamArrayToDatabase(manualExamArray);
 			JOptionPane.showMessageDialog(null, "Exam created on the: " + getDateTime() + ", contains: " + counter + " questions.");
 			System.out.println("Exam created on the: " + getDateTime() + ", contains: " + counter + " questions.");
 			manualExamArray.clear();
@@ -581,7 +650,7 @@ public class Manager {
 		return counter;
 	}
 
-	public void addBuiltInAnswers(AmericanQ answers) {
+	public void addBuiltInAnswers(AmericanQ answers) throws SQLException {
 		int trueCounter = 0;
 		int falseCounter = 0;
 		for (int j = 0; j < answers.getAnswersNum(); j++) {
@@ -621,14 +690,15 @@ public class Manager {
 					}
 				}
 				sortAndPrintAutoExamArray();
-			}
-			else {
-				String m = JOptionPane.showInputDialog("Only "+allQuestions.size()+" Questions available.");
+			} else {
+				String m = JOptionPane.showInputDialog("Only " + allQuestions.size() + " Questions available.");
 				int newAmount = Integer.parseInt(m);
 				autoCreateExam(newAmount);
 			}
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(null, "Please enter a numerical value!");
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
 		}
 
 	}
@@ -651,8 +721,7 @@ public class Manager {
 			for (int i = 0; i < aQ.getAnswersNum(); i++) {
 				if (!aQ.getAnswers(i).getAnswer().isEmpty()) {
 					System.out.println("[" + (i + 1) + "] " + aQ.getAnswers(i));
-				}
-				else {
+				} else {
 					System.out.println("No answers available.");
 				}
 			}
@@ -663,8 +732,7 @@ public class Manager {
 		if (!manualExamArray.contains(question)) {
 			manualExamArray.add(question);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -673,13 +741,12 @@ public class Manager {
 		if (!(manualExamArray.contains(oQ))) {
 			manualExamArray.add(oQ);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
-	public boolean addQuestionToManualExam(int questionNum, List<Integer> answersArray) {
+	public boolean addQuestionToManualExam(int questionNum, List<Integer> answersArray) throws SQLException, ClassNotFoundException {
 		Question question = getQuestionById(questionNum);
 		if (question instanceof OpenQ) {
 			OpenQ open = (OpenQ) question;
@@ -692,7 +759,7 @@ public class Manager {
 
 			for (int i = 0; i < answersArray.size(); i++) {
 				System.out.println(answersArray.get(i));
-				aQ.addAnswer(new AmericanAnswers(dQ.getAnswers(answersArray.get(i)-1)));
+				aQ.addAnswer(new AmericanAnswers(dQ.getAnswers(answersArray.get(i) - 1)));
 			}
 			addAmericanQuestionToManualExam(aQ);
 			return true;
@@ -732,8 +799,7 @@ public class Manager {
 		return crembo;
 	}
 
-	private static String getDateTime()
-	{
+	private static String getDateTime() {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
 		return df.format(new Date());
 	}
@@ -762,7 +828,7 @@ public class Manager {
 		return allQuestions.get(index);
 	}
 
-	public void questionsList() throws SQLException {
+	public void questionsList() throws SQLException, ClassNotFoundException {
 		//General questions
 		String quest1 = "First question";
 		String quest2 = "Second question";
@@ -863,72 +929,46 @@ public class Manager {
 		addOpenQuestions(quest8, openAns4);
 	}
 
-	public void copyArrayToANewCollectionAndSortWithDupes() throws SQLException {
-		questionsList();
-		//Places allQuestions values into hashMapSortedList
-		for (int i = 0; i < getAllQuestionSize(); i++) {
-			hashMapSortedList.put(allQuestions.get(i).getQuestion(), i);
-		}
-		//Creates a TreeMap that sorts by the question length.
-		treeMap = new TreeMap<String, Integer>(new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				if (o1.length() > o2.length()) {
-					return -1;
-				} else if (o1.length() < o2.length()) {
-					return 1;
-				} else if (o1.length() == o2.length()){
-					return 1;
-				}
-				else {
-					return 0;
-				}
-			}
-		});
-		treeMap.putAll(hashMapSortedList);
-		printTreeMapCollection((TreeMap<String, Integer>) treeMap);
-	}
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// SQL Database  //////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 
-	public void printTreeMapCollection(TreeMap<String, Integer> treeMap) {
-		System.out.println("This is the sorted TreeMap collection: \n");
-		Iterator<Entry<String, Integer>> entryIt = treeMap.entrySet().iterator();
-		while (entryIt.hasNext()) {
-			System.out.println(entryIt.next());
+	public void connectToDatabase() throws SQLException, ClassNotFoundException {
+		DBIntegration.connectToSql();
+		if (DBIntegration.checkIfConnectionIsUp()) {
+			fireConnectionEstablished();
+		}
+		else {
+			fireConnectionFailed();
+		}
+	}
+	private void fireConnectionFailed() {
+		for (MainEventsListener l : mainListener) {
+			l.connectionFailedToUi();
+		}
+	}
+	private void fireConnectionEstablished() {
+		for (MainEventsListener l : mainListener) {
+			l.connectionEstablishedToUi();
 		}
 	}
 
-	public HashSet<String> copyToHashSet(HashMap<String, Integer> hashMapSortedList, HashSet<String> hashSet) {
-		for (Map.Entry<String, Integer> entry : hashMapSortedList.entrySet()) {
-			String key = entry.getKey();
-			hashSet.add(key);
-		}
-		return hashSet;
+	public void closeConnectionFromManager() throws SQLException {
+		DBIntegration.closeConnectionInstant();
+		fireConnectionClosed();
 	}
 
-	public void addNewStringToHashSet(String theStr) {
-		mainIterator = hashSetList.iterator();
-		StringComparator sComp = new StringComparator();
-		while (mainIterator.hasNext()) {
-			int boolVal = sComp.compare((String) mainIterator.next(), theStr);
-			if (boolVal == 0) {
-				System.out.println("Question already exists in the 'HashSet'.");
-				break;
-			}
+	private void fireConnectionClosed() {
+		for (MainEventsListener l : mainListener) {
+			l.closedConnectionToDatabase();
 		}
-		hashSetList.add(theStr);
+	}
+	public void createNewTablesToManager() throws SQLException {
+		DBIntegration.createNewTables();
 	}
 
-	public void copyArrayToANewCollectionAndSortNoDupes() throws SQLException {
-		questionsList();
-		hashSetList = copyToHashSet(hashMapSortedList, hashSetList);
-		printHashSet();
-	}
-
-	public void printHashSet() {
-		mainIterator = hashSetList.iterator();
-		while (mainIterator.hasNext()) {
-			System.out.println(mainIterator.next());
-		}
+	public void dropOldTablesToManager() throws SQLException {
+		DBIntegration.dropOldTables();
 	}
 }
 

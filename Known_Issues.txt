@@ -1,1 +1,22 @@
-None as far as I am concerned.
+# Object-Oriented Programming - Project.
+Creators Name: Benjamin Rain, Eli Levy
+ID: 319520425, 206946790
+
+# Object-Oriented Programmg course:
+* Part 1: Hierarchy, Polymorphism, Object and Exceptions. [Done]
+* Part 2: Interfaces, files, generics [Done]
+* Part 3: GUI & MVC [Done]
+
+# Design Patterns course:
+* Part 1: Collections, Generics, Lambda Expressions, Iterator.
+
+> * [Design Patterns course (Currently) - Project / github.com/TulakHordia/OOPProject]
+>   * Known Issues
+> * * * For the first part I have used the allQuestions list, located in 'Manager' class, line 28, 124.
+> * * * I copied the 'ArrayList' to a 'TreeSet' collection (Option [15] in the menu) for Question 12.
+> * * * The 'TreeSet' sorting is done by the comparing the Strings length by using a Comparator function.
+> * * * For Question 13, I copied the 'TreeSet' to an 'ArrayList' (Option [16] in the menu).
+> * * * The 'ArrayList' duplication check is done by another class called 'StringComparator', it checks whether the strings are of the same length
+> * * * plus if they contain the same amount of the letter 'a'.
+> * * * For Question 14, I copied the ArrayList to a newly sorted 'ArrayList' but this time I used the 'TreeSet's comparator function to sort it.
+> * * * Everything is printed in options [17], [18], [19].

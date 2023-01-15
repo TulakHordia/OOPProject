@@ -1,5 +1,6 @@
 package View;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,6 +25,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+
+import javax.swing.*;
 
 public class AutoExamView implements AbstractAutoExamView, UiElements {
 	
@@ -129,7 +132,11 @@ public class AutoExamView implements AbstractAutoExamView, UiElements {
 			@Override
 			public void handle(MouseEvent event) {
 				for (MainUiListener l : questUiListeners) {
-					l.handleCloseButtonAction(event, closeWindow);
+					try {
+						l.handleCloseButtonAction(event, closeWindow);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
 				}
 			}
 		});

@@ -8,13 +8,25 @@ import Model.OpenQ;
 import Model.Question;
 
 public interface AbstractMainView {
-	
-	void addOpenQuestionToTableInUi(OpenQ question);
-	void addAmericanQuestionToTableInUi(AmericanQ question);
+
+	//General
 	void registerListener(MainUiListener listener);
 	void errorMessageUi(String msg);
+
+	//Questions
+	void addOpenQuestionToTableInUi(OpenQ question);
+	void addAmericanQuestionToTableInUi(AmericanQ question);
 	void addQuestionsToTable(List<Question> questions);
+	void deletedOpenQuestionToUi(OpenQ oQuest);
+	void deletedAmericanQuestionToUi(AmericanQ question);
 	void savedAllQuestionsMessageBox(String fileName, int amountOfQuestions);
 	void addedAmericanAnswerPopUpDialog(AmericanQ question);
+
+	//SQL Database
+    void closedConnectionToDatabaseToUiUpdate();
+    void connectionEstablishedToUi();
+	void connectionFailedToUi();
+
+
 }
 

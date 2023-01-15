@@ -2,6 +2,7 @@ package View;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
@@ -147,7 +148,11 @@ public class ExistingExamsView implements AbstractExistingExams, UiElements {
 			@Override
 			public void handle(MouseEvent event) {
 				for (MainUiListener l : questUiListeners) {
-					l.handleCloseButtonAction(event, closeWindow);
+					try {
+						l.handleCloseButtonAction(event, closeWindow);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
 				}
 			}
 		});

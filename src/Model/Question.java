@@ -2,6 +2,7 @@ package Model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class Question implements Serializable {
 	
@@ -38,5 +39,4 @@ public abstract class Question implements Serializable {
 	public String toString() {
 		return question + "\n";
 	}
-	
 }

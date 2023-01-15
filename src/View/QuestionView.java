@@ -1,6 +1,11 @@
 package View;
 
+import java.awt.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
@@ -8,24 +13,20 @@ import javax.swing.JOptionPane;
 
 import Controllers.MainController;
 import Listeners.MainUiListener;
-import Model.AmericanAnswers;
-import Model.AmericanQ;
-import Model.OpenQ;
-import Model.Question;
-import Model.UiElements;
+import Model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
@@ -43,6 +44,8 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	@SuppressWarnings("unused")
 	private MainController questionsController;
 	private Vector<MainUiListener> questUiListeners = new Vector<MainUiListener>();
+	private DatabaseIntegration DBIntegration;
+	private ResultSet resultSet;
 	
 	private Stage stage;
 	private Scene questionScene;
@@ -70,6 +73,7 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	private Label importExportRelatedLabel;
 	private Label examRelatedLabel;
 	private Label importFromQuestionsListLabel;
+	private Label sqlTitle;
 	private TextField openQuestionTextField;
 	private TextField openAnswerTextField;
 	private TextField americanQuestionTextField;
@@ -85,17 +89,24 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	TableColumn<OpenQ, String> answerCol;
 	TableColumn<AmericanQ, String> americanQuestionCol;
 	TableColumn<AmericanAnswers, Object> americanAnswerCol;
-	
+
+	Separator verticalSep1;
+	Separator verticalSep2;
+	Separator horizontalSep1;
+	Separator horizontalSep2;
+
 	public QuestionView(MainController questionController) {
 		this.questionsController = questionController;
 	}
 	
-	public QuestionView(Stage theStage) {
+	public QuestionView(Stage theStage) throws SQLException, ClassNotFoundException {
+		DBIntegration = new DatabaseIntegration();
+
 		this.stage = theStage;
 		theStage.setTitle("Exam Creator 1.0");
 		Image icon = new Image("list-check.png");
 		theStage.getIcons().add(icon);
-		theStage.setWidth(1000);
+		theStage.setWidth(1090);
 		theStage.setHeight(1000);
 		theStage.setResizable(false);
 		sceneInit();
@@ -197,6 +208,10 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 		this.importFromQuestionsListLabel = new Label("(Only if no viable .ser file exists)");
 		importFromQuestionsListLabel.setFont(new Font("Cambria",15));
 		importFromQuestionsListLabel.setTextFill(Color.BLUE);
+		this.sqlTitle = new Label("SQL Database: ");
+		sqlTitle.setFont(new Font("Cambria",15));
+		sqlTitle.setTextFill(Color.RED);
+		sqlTitle.setUnderline(true);
 		this.space = new Label(" ");
 		this.space2 = new Label(" ");
 		this.space3 = new Label(" ");
@@ -204,6 +219,14 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 		this.sFalse = new RadioButton("False");
 		this.openQuestionTable = new TableView<OpenQ>();
 		this.americanQuestionTable = new TableView<AmericanQ>();
+		this.verticalSep1 = new Separator();
+		this.verticalSep2 = new Separator();
+		this.horizontalSep1 = new Separator();
+		this.horizontalSep2 = new Separator();
+		verticalSep1.setOrientation(Orientation.VERTICAL);
+		verticalSep2.setOrientation(Orientation.VERTICAL);
+		horizontalSep1.setOrientation(Orientation.HORIZONTAL);
+		horizontalSep2.setOrientation(Orientation.HORIZONTAL);
 	}
 	
 	@SuppressWarnings("static-access")
@@ -216,19 +239,15 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 		sFalse.setToggleGroup(tG);
 		radioButtonTilePane.getChildren().add(sTrue);
 		radioButtonTilePane.getChildren().add(sFalse);
-		
 		//GridPane properties
 		gpRoot.setHgap(2);
 		gpRoot.setVgap(2);
 		gpRoot.setPadding(new Insets(15));
-		
 		//Title
 		gpRoot.add(titleText, 0, 0);
 		gpRoot.setHalignment(titleText, HPos.CENTER);
-		
 		//space
 		gpRoot.add(space, 0, 1);
-		
 		//Open questions related Label
 		gpRoot.add(questionsRelatedLabel, 0, 2);
 		//Open question things
@@ -283,39 +302,80 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 		//Tables
 		gpRoot.add(doubleClickValueToEdit, 1, 18);
 		gpRoot.setHalignment(doubleClickValueToEdit, HPos.CENTER);
+		gpRoot.add(americanQuestionTable, 0, 19);
 		gpRoot.add(openQuestionTable, 1, 19);
 		gpRoot.add(doubleClickToSeeAnswer, 0, 18);
 		gpRoot.setHalignment(doubleClickToSeeAnswer, HPos.CENTER);
-		gpRoot.add(americanQuestionTable, 0, 19);
+
 		//Select American Question and open the answers button
-		gpRoot.add(openAnswers(), 0, 20);
+		gpRoot.add(deleteAmericanQuestionButton(), 0, 20);
+		gpRoot.add(deleteOpenQuestionButton(), 1, 20);
+		gpRoot.add(openAnswers(), 0, 21);
+		//Separator #1
+		gpRoot.add(verticalSep1, 5, 0, 1, GridPane.REMAINING);
+		//SQL Database stuff
+		gpRoot.add(sqlTitle, 6, 2);
+		gpRoot.add(establishConnectionButton(), 6, 3);
+		gpRoot.add(closeDatabaseConnection(), 6, 4);
+		gpRoot.add(loadDataFromSqlButton(), 6, 5);
+		gpRoot.add(horizontalSep1, 6, 6);
+		gpRoot.add(createTables(), 6, 7);
+		gpRoot.add(dropTables(), 6, 8);
+		gpRoot.add(horizontalSep2, 6, 9);
+		//Separator #2
+		gpRoot.add(verticalSep2, 7, 0, 1, GridPane.REMAINING);
 		//Exit button
-		gpRoot.add(saveAndExitOrReturn(questionScene), 3, 65);
+		gpRoot.add(saveAndExitOrReturn(questionScene), 6, 28);
 	}
 	
 	@Override
 	public void sceneInit() {
 		this.gpRoot = new GridPane();
-		this.questionScene = new Scene(gpRoot, 1000, 1000);
+		this.questionScene = new Scene(gpRoot, 1090, 1000);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void createTable() {
-		
-		questionCol = new TableColumn<OpenQ, String>("Open Question");
-		answerCol = new TableColumn<OpenQ, String>("Answer");
-		americanQuestionCol = new TableColumn<AmericanQ, String>("American Question");
-		
-		questionCol.setSortable(false);
-		answerCol.setSortable(false);
-		americanQuestionCol.setSortable(false);
-			
-		openQuestionTable.setMinSize(400, 300);
-		americanQuestionTable.setMinSize(300, 300);
-		
-		openQuestionTable.setEditable(true);
-		americanQuestionTable.setEditable(false);
+	private void createTable() throws SQLException {
 
+		Connection connectSQL = DBIntegration.getConnection();
+		resultSet = DBIntegration.getResultSet();
+		String OQTable = "SELECT * from openquestions";
+		resultSet = connectSQL.createStatement().executeQuery(OQTable);
+		int width = 500;
+		int height = 500;
+		int minWidth = 100;
+
+		String AQTable = "SELECT * from americanquestions";
+		resultSet = connectSQL.createStatement().executeQuery(AQTable);
+		//AmericanQuestions Column
+		americanQuestionCol = new TableColumn("American Questions");
+		americanQuestionCol.setSortable(false);
+		americanQuestionCol.setMinWidth(200);
+		americanQuestionCol.setMaxWidth(width);
+		americanQuestionCol.setCellValueFactory(new PropertyValueFactory<AmericanQ, String>("question"));
+		americanQuestionCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		americanQuestionCol.setOnEditCommit(new EventHandler<CellEditEvent<AmericanQ, String>>() {
+
+			@Override
+			public void handle(CellEditEvent<AmericanQ, String> event) {
+				event.getTableView().getItems().get(event.getTablePosition().getRow()).setQuestion(event.getNewValue());
+				for (MainUiListener l : questUiListeners) {
+					int questNum = event.getTableView().getItems().get(event.getTablePosition().getRow()).getQuestionNumber();
+					String theQuestion = event.getTableView().getItems().get(event.getTablePosition().getRow()).getQuestion();
+					try {
+						l.updateAmericanQuestionFromUi(theQuestion, questNum);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
+			}
+		});
+
+		//Question Column
+		questionCol = new TableColumn("Open Question");
+		questionCol.setSortable(false);
+		questionCol.setMinWidth(minWidth);
+		questionCol.setMaxWidth(width);
 		questionCol.setCellValueFactory(new PropertyValueFactory<OpenQ, String>("question"));
 		questionCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		questionCol.setOnEditCommit(new EventHandler<CellEditEvent<OpenQ, String>>() {
@@ -323,8 +383,23 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 			@Override
 			public void handle(CellEditEvent<OpenQ, String> event) {
 				event.getTableView().getItems().get(event.getTablePosition().getRow()).setQuestion(event.getNewValue());
+				for (MainUiListener l : questUiListeners) {
+					int questNum = event.getTableView().getItems().get(event.getTablePosition().getRow()).getQuestionNumber();
+					String theQuestion = event.getTableView().getItems().get(event.getTablePosition().getRow()).getQuestion();
+					try {
+						l.updateOpenQuestionFromUi(theQuestion, questNum);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
 			}
 		});
+
+		//Answer Column
+		answerCol = new TableColumn("Answer");
+		answerCol.setSortable(false);
+		answerCol.setMinWidth(minWidth);
+		answerCol.setMaxWidth(width);
 		answerCol.setCellValueFactory(new PropertyValueFactory<OpenQ, String>("answer"));
 		answerCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		answerCol.setOnEditCommit(new EventHandler<CellEditEvent<OpenQ, String>>() {
@@ -332,43 +407,37 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 			@Override
 			public void handle(CellEditEvent<OpenQ, String> event) {
 				event.getTableView().getItems().get(event.getTablePosition().getRow()).setCorrectAnswer(event.getNewValue());
+				for (MainUiListener l : questUiListeners) {
+					int questNum = event.getTableView().getItems().get(event.getTablePosition().getRow()).getQuestionNumber();
+					String theAnswer = event.getTableView().getItems().get(event.getTablePosition().getRow()).getAnswer();
+					try {
+						l.updateOpenAnswerFromUi(theAnswer, questNum);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
 			}
 		});
-		
-		americanQuestionCol.setCellValueFactory(new PropertyValueFactory<AmericanQ, String>("question"));
-		
-		americanQuestionTable.setEditable(true);
-		americanQuestionCol.setCellFactory(TextFieldTableCell.forTableColumn());
-		americanQuestionCol.setOnEditCommit(new EventHandler<CellEditEvent<AmericanQ, String>>() {
 
-			@Override
-			public void handle(CellEditEvent<AmericanQ, String> event) {
-				event.getTableView().getItems().get(event.getTablePosition().getRow()).setQuestion(event.getNewValue());
-			}
-		});
-		
-		int width = 500;
-		int height = 500;
-		int minWidth = 100;
-		
-		openQuestionTable.resizeColumn(answerCol, 120);
-		openQuestionTable.resizeColumn(questionCol, 120);
+
+		openQuestionTable.setMinSize(400, 300);
+		americanQuestionTable.setMinSize(300, 300);
+		americanQuestionTable.setEditable(true);
+		openQuestionTable.setEditable(true);
+		americanQuestionTable.setEditable(false);
+
+		openQuestionTable.resizeColumn(answerCol, 100);
+		openQuestionTable.resizeColumn(questionCol, 100);
 		openQuestionTable.setLayoutX(500);
-		questionCol.setMinWidth(minWidth);
-		answerCol.setMinWidth(minWidth);
-		questionCol.setMaxWidth(width);
-		answerCol.setMaxWidth(width);
 		openQuestionTable.setPrefHeight(height);
 		
-		americanQuestionTable.resizeColumn(americanQuestionCol, 170);
+		americanQuestionTable.resizeColumn(americanQuestionCol, 100);
 		americanQuestionTable.setLayoutX(1000);
-		americanQuestionCol.setMinWidth(300);
-		americanQuestionCol.setMaxWidth(width);
-		americanQuestionTable.setPrefHeight(height);
-		
-		openQuestionTable.getColumns().addAll(questionCol, answerCol);
-		americanQuestionTable.getColumns().addAll(americanQuestionCol);
 
+		americanQuestionTable.setPrefHeight(height);
+
+		americanQuestionTable.getColumns().addAll(americanQuestionCol);
+		openQuestionTable.getColumns().addAll(questionCol, answerCol);
 	}
 	
 	public Button addQuestionButton() {
@@ -408,7 +477,14 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 				}
 				else {
 					for (MainUiListener l : questUiListeners) {
-						AmericanQ aW = new AmericanQ(americanQuestionTextField.getText());
+						AmericanQ aW = null;
+						try {
+							aW = new AmericanQ(americanQuestionTextField.getText());
+						} catch (SQLException e) {
+							JOptionPane.showMessageDialog(null, "Adding question failed\n" + e.getMessage());
+						} catch (ClassNotFoundException e) {
+							JOptionPane.showMessageDialog(null, "Adding question failed\n" + e.getMessage());
+						}
 						l.addAmericanQuestionToUi(aW);
 					}
 				}
@@ -441,12 +517,60 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 				else {
 					AmericanQ aW = americanQuestionTable.getSelectionModel().getSelectedItem();
 					for (MainUiListener l : questUiListeners) {
-						l.addAmericanAnswerToAmericanQuestion(aW, americanAnswerTextField.getText(), buttonState);
+						try {
+							l.addAmericanAnswerToAmericanQuestion(aW, americanAnswerTextField.getText(), buttonState);
+						} catch (SQLException e) {
+							JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+						}
 					}
 				}
 			}
 		});
 		return addAmericanAnswersClick;
+	}
+
+	public Button deleteAmericanQuestionButton() {
+		Button deleteAmericanQuestion = new Button();
+		deleteAmericanQuestion.setText("Delete Question");
+		deleteAmericanQuestion.setPrefSize(125, 34);
+		deleteAmericanQuestion.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				boolean buttonState = true;
+				for (MainUiListener l : questUiListeners) {
+					AmericanQ aW = americanQuestionTable.getSelectionModel().getSelectedItem();
+					try {
+						l.deleteAmericanQuestion(aW, buttonState);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
+			}
+		});
+		return deleteAmericanQuestion;
+	}
+
+	public Button deleteOpenQuestionButton() {
+		Button deleteOpenQuestion = new Button();
+		deleteOpenQuestion.setText("Delete Question");
+		deleteOpenQuestion.setPrefSize(125, 34);
+		deleteOpenQuestion.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				boolean buttonState = true;
+				for (MainUiListener l : questUiListeners) {
+					OpenQ oQ = openQuestionTable.getSelectionModel().getSelectedItem();
+					try {
+						l.deleteOpenQuestion(oQ, buttonState);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
+			}
+		});
+		return deleteOpenQuestion;
 	}
 	
 	public Button importFromBinaryFileButton() {
@@ -498,13 +622,17 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	public Button saveAndExitOrReturn(Scene scene) {
 		Button closeWindow = new Button();
 		closeWindow.setText("Exit");
-		closeWindow.setMinSize(100, 50);
+		closeWindow.setMinSize(130, 50);
 		closeWindow.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent event) {
 				for (MainUiListener l : questUiListeners) {
-					l.handleCloseButtonAction(event, closeWindow);
+					try {
+						l.handleCloseButtonAction(event, closeWindow);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
 					try {
 						l.saveToBinaryFileOnExit();
 					} catch (IOException e) {
@@ -530,7 +658,27 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 				else {
 					for (MainUiListener l : questUiListeners) {
 						AmericanQ aW = americanQuestionTable.getSelectionModel().getSelectedItem();
-						l.openAnswersWindow(aW, stage);
+						System.out.println("TEST QUESTION NUMBER: " + aW.getQuestionNumber());
+						String[] options = { "SQL", "Code"};
+						var selection = JOptionPane.showOptionDialog(null, "Load from SQL or code?", "Load answers...", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION, null, options, options[1]);
+						if (selection == 0) {
+							try {
+								l.openAnswersWindowSQL(aW, stage);
+							} catch (SQLException e) {
+								JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+							} catch (ClassNotFoundException e) {
+								errorMessageUi(e.getMessage());
+							}
+						}
+						if (selection == 1) {
+							try {
+								l.openAnswersWindowCode(aW, stage);
+							} catch (SQLException e) {
+								JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+							} catch (ClassNotFoundException e) {
+								errorMessageUi(e.getMessage());
+							}
+						}
 					}
 				}
 			}
@@ -702,12 +850,172 @@ public class QuestionView extends GridPane implements UiElements, AbstractMainVi
 	}
 
 	@Override
+	public void deletedOpenQuestionToUi(OpenQ oQuest) {
+		openQuestionTable.getItems().remove(oQuest);
+	}
+
+	@Override
+	public void deletedAmericanQuestionToUi(AmericanQ question) {
+		americanQuestionTable.getItems().remove(question);
+	}
+
+	@Override
 	public void savedAllQuestionsMessageBox(String fileName, int amountOfQuestions) {
 		JOptionPane.showMessageDialog(null, "Saved all questions to: " + fileName+".txt"+"\nContains: "+amountOfQuestions+" Questions");
 	}
 
 	@Override
 	public void addedAmericanAnswerPopUpDialog(AmericanQ question) {
-		
+		JOptionPane.showMessageDialog(null, "Added");
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// SQL Database  //////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	public Button establishConnectionButton() {
+		Button connectToDatabaseButton = new Button();
+		connectToDatabaseButton.setText("Connect to SQL");
+		connectToDatabaseButton.setMinSize(130, 25);
+		connectToDatabaseButton.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				for (MainUiListener l : questUiListeners) {
+					try {
+						l.establishConnectionToDatabase();
+					} catch (Exception e) {
+						errorMessageUi(e.getMessage());
+					}
+				}
+			}
+		});
+		return connectToDatabaseButton;
+	}
+
+	public Button closeDatabaseConnection() {
+		Button closeDBConnection = new Button();
+		closeDBConnection.setText("Disconnect from SQL");
+		closeDBConnection.setMinSize(130, 25);
+		closeDBConnection.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				int choicePane = JOptionPane.showConfirmDialog(null, "Are you sure?");
+				if (choicePane == 0) {
+					for (MainUiListener l : questUiListeners) {
+						try {
+							l.closeDatabaseConnectionClick();
+						} catch (Exception e) {
+							errorMessageUi(e.getMessage());
+						}
+					}
+				}
+				else if (choicePane == 1 || choicePane == 2) {
+					JOptionPane.showMessageDialog(null, "Did not close the connection");
+				}
+			}
+		});
+		return closeDBConnection;
+	}
+
+	public Button loadDataFromSqlButton() {
+		Button loadData = new Button();
+		loadData.setText("Load Data");
+		loadData.setMinSize(130, 25);
+		loadData.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				try {
+					loadAmericanQuestionsFromDatabaseToTable();
+					loadOpenQuestionsFromDatabaseToTable();
+				} catch (SQLException e) {
+					JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+				} catch (ClassNotFoundException e) {
+					errorMessageUi(e.getMessage());
+				}
+			}
+		});
+		return loadData;
+	}
+
+	public Button createTables() {
+		Button createTable = new Button();
+		createTable.setText("Create Tables");
+		createTable.setMinSize(130, 25);
+		createTable.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+					for (MainUiListener l : questUiListeners) {
+						try {
+							l.createNewTables();
+						} catch (SQLException e) {
+							JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+						}
+					}
+			}
+		});
+		return createTable;
+	}
+
+	public Button dropTables() {
+		Button dropTable = new Button();
+		dropTable.setText("Drop Tables");
+		dropTable.setMinSize(130, 25);
+		dropTable.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				for (MainUiListener l : questUiListeners) {
+					try {
+						l.dropOldTables();
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
+				}
+			}
+		});
+		return dropTable;
+	}
+
+	@Override
+	public void closedConnectionToDatabaseToUiUpdate() {
+		JOptionPane.showMessageDialog(null, "Closed connection to the Database.");
+	}
+
+	@Override
+	public void connectionEstablishedToUi() {
+		JOptionPane.showMessageDialog(null, "Connection established.");
+	}
+
+	@Override
+	public void connectionFailedToUi() {
+		JOptionPane.showMessageDialog(null, "Connection failed.");
+	}
+
+	public void loadOpenQuestionsFromDatabaseToTable() throws SQLException {
+		Connection connectSQL = DBIntegration.getConnection();
+		ObservableList<OpenQ> questions = FXCollections.observableArrayList();
+		PreparedStatement pState = connectSQL.prepareStatement("SELECT * from openquestions");
+		resultSet = pState.executeQuery();
+		while (resultSet.next()) {
+			OpenQ oQ = new OpenQ(resultSet.getString("question"), resultSet.getString("answer"));
+			questions.add(oQ);
+		}
+		openQuestionTable.setItems(questions);
+	}
+
+	public void loadAmericanQuestionsFromDatabaseToTable() throws SQLException, ClassNotFoundException {
+		Connection connectSQL = DBIntegration.getConnection();
+		ObservableList<AmericanQ> questions = FXCollections.observableArrayList();
+		PreparedStatement pState = connectSQL.prepareStatement("SELECT * from americanquestions");
+		resultSet = pState.executeQuery();
+		while (resultSet.next()) {
+			AmericanQ aQ = new AmericanQ(resultSet.getString("question"));
+			questions.add(aQ);
+			americanQuestionTable.setItems(questions);
+		}
 	}
 }

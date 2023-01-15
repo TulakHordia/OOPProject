@@ -1,8 +1,0 @@
-
-Question: Eighth question
-Answer for question number: 1
-Fourth open answer is pretty short
-
-Question: Seventh question
-Answer for question number: 2
-Third open answer is a very very very very very very very long one

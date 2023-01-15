@@ -8,5 +8,7 @@ public interface AbstractManualExamView {
 	void registerListener(MainUiListener listener);
 	void errorMessageUi(String msg);
 	void loadQuestionsIntoTable(Question allQuestions);
+
+	void loadDataFromSQL();
 }
 

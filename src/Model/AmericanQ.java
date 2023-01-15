@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,15 +9,17 @@ import javax.swing.JOptionPane;
 
 public class AmericanQ extends Question implements Serializable {
 
+	Manager manModel;
 	NewSet<AmericanAnswers> Answers = new NewSet<AmericanAnswers>();
 	private int answersNum;
 	
-	public AmericanQ(String question) {
+	public AmericanQ(String question) throws SQLException, ClassNotFoundException {
 		super(question);
 		answersNum = 0;
+		manModel = new Manager();
 	}
 	
-	public String addAnswer(AmericanAnswers answer) {		
+	public String addAnswer(AmericanAnswers answer) throws SQLException {
 		for (int i = 0; i <= answersNum; i++) {
 			if (Answers.contains(answer)) {
 				return "Answer already exists";
@@ -28,6 +31,7 @@ public class AmericanQ extends Question implements Serializable {
 		answersNum++;
 		if (answersNum >= Answers.size()) {
 			Answers.add(answer);
+			manModel.sendAnswerToDatabase(this, answer);
 		}
 		return "Answer added successfully";
 	}

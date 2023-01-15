@@ -1,15 +1,18 @@
 package View;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
 import Listeners.MainUiListener;
-import Model.AmericanQ;
-import Model.OpenQ;
-import Model.Question;
-import Model.UiElements;
+import Model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -29,6 +32,9 @@ import javafx.stage.Stage;
 
 public class ManualExamView implements UiElements, AbstractManualExamView {
 
+	private DatabaseIntegration DBIntegration;
+	private ResultSet resultSet;
+
 	private Scene scene;
 	private GridPane gp;
 	private Label titleText;
@@ -39,7 +45,9 @@ public class ManualExamView implements UiElements, AbstractManualExamView {
 	private TableColumn<OpenQ, String> openQuestionsColumn;
 	private TableColumn<AmericanQ, String> americanQuestionsColumn;
 	
-	public ManualExamView(Stage stage) {
+	public ManualExamView(Stage stage) throws SQLException, ClassNotFoundException {
+		DBIntegration = new DatabaseIntegration();
+
 		stage.setTitle("Manual Exam Creator");
 		stage.setWidth(480);
 		stage.setHeight(600);
@@ -185,6 +193,8 @@ public class ManualExamView implements UiElements, AbstractManualExamView {
 						l.createManualExam();
 					} catch (IOException e) {
 						errorMessageUi(e.getMessage());
+					} catch (SQLException e) {
+						throw new RuntimeException(e);
 					}
 				}
 			}
@@ -211,11 +221,50 @@ public class ManualExamView implements UiElements, AbstractManualExamView {
 			@Override
 			public void handle(MouseEvent event) {
 				for (MainUiListener l : questUiListeners) {
-					l.handleCloseButtonAction(event, closeWindow);
+					try {
+						l.handleCloseButtonAction(event, closeWindow);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+					}
 				}
 			}
 		});
 		return closeWindow;	
+	}
+
+	public void loadDataFromSQL() {
+		try {
+			loadAmericanQuestionsFromDatabaseToTable();
+			loadOpenQuestionsFromDatabaseToTable();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage() + "\nSQL State: " + e.getSQLState() + "\nVendor Error: " + e.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			errorMessageUi(e.getMessage());
+		}
+	}
+
+	public void loadOpenQuestionsFromDatabaseToTable() throws SQLException {
+		Connection connectSQL = DBIntegration.getConnection();
+		ObservableList<OpenQ> questions = FXCollections.observableArrayList();
+		PreparedStatement pState = connectSQL.prepareStatement("SELECT * from openquestions");
+		resultSet = pState.executeQuery();
+		while (resultSet.next()) {
+			OpenQ oQ = new OpenQ(resultSet.getString("question"), resultSet.getString("answer"));
+			questions.add(oQ);
+		}
+		openQuestionsTable.setItems(questions);
+	}
+
+	public void loadAmericanQuestionsFromDatabaseToTable() throws SQLException, ClassNotFoundException {
+		Connection connectSQL = DBIntegration.getConnection();
+		ObservableList<AmericanQ> questions = FXCollections.observableArrayList();
+		PreparedStatement pState = connectSQL.prepareStatement("SELECT * from americanquestions");
+		resultSet = pState.executeQuery();
+		while (resultSet.next()) {
+			AmericanQ aQ = new AmericanQ(resultSet.getString("question"));
+			questions.add(aQ);
+			americanQuestionsTable.setItems(questions);
+		}
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import View.AbstractMainView;
 import View.QuestionView;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javax.swing.*;
+
 import java.sql.*;
 
 public class Program extends Application implements ProgramMethods  {
@@ -93,8 +93,13 @@ public class Program extends Application implements ProgramMethods  {
 				}
 				break;
 
-			case 3:
-
+				case 3:
+					manage.printEverything();
+					System.out.println("\n\nPlease select the question number you want to delete:\n");
+					int questNum = input.nextInt();
+					manage.deleteQuestion(questNum);
+					break;
+				case 4:
 				System.out.println("See the full list of questions&answers?? y/Y");
 				char newChoice = input.next().charAt(0);
 				if (newChoice == 'y' || newChoice == 'Y') {
@@ -107,7 +112,7 @@ public class Program extends Application implements ProgramMethods  {
 				System.out.println(manage.updateQuestion(updateChoice, newQuestion));
 				break;
 
-			case 4:
+			case 5:
 				
 				System.out.println("Would you like to update an American answer or Open answer?");
 				System.out.println("Type 1 for American, 2 for Open.");
@@ -141,7 +146,7 @@ public class Program extends Application implements ProgramMethods  {
 				}
 				break;
 
-			case 5:
+			case 6:
 
 				System.out.println("See the full list of questions&answers? y/Y");
 				char newChoice2 = input.next().charAt(0);
@@ -162,7 +167,7 @@ public class Program extends Application implements ProgramMethods  {
 				System.out.println(manage.deleteAnswer(questionNum1, answerNum1));
 				break;
 				
-			case 6:
+			case 7:
 				
 				System.out.println("How many questions do you want in your exam? ");
 				int amountOfQuestions =  manage.safeNextInt(input);
@@ -191,7 +196,7 @@ public class Program extends Application implements ProgramMethods  {
 				manage.sortAndPrintManualExamArray();
 				break;
 				
-			case 7:
+			case 8:
 				
 				System.out.println("How many questions would you like in your exam? ");
 				System.out.println("There are only: " + manage.checkAllQuestionsLength() + " Questions available.");
@@ -203,12 +208,12 @@ public class Program extends Application implements ProgramMethods  {
 				manage.autoCreateExam(questAmount);
 				break;
 				
-			case 8:
+			case 9:
 				
 				manage.sortAllQuestions();
 				break;
 				
-			case 9:
+			case 10:
 				
 				System.out.println("Please enter the name of the file you want to import: ");
 				System.out.println("--Make sure the name ends with the correct ending (Ex - .txt, .dat, .ser)--");
@@ -216,7 +221,7 @@ public class Program extends Application implements ProgramMethods  {
 				manage.readFromBinaryFile(fileName);
 				break;
 				
-			case 10:
+			case 11:
 				
 				System.out.println("Please enter the name of the file you wish to save to: ");
 				System.out.println("--Make sure the name ends with the correct ending (Ex - .txt, .dat, .ser)--");
@@ -224,7 +229,7 @@ public class Program extends Application implements ProgramMethods  {
 				manage.writeAllExternally(fileName2);
 				break;
 				
-			case 11:
+			case 12:
 				
 				System.out.println("All existing exams: ");
 				manage.showAllExistingExamsInDirectory();
@@ -233,46 +238,17 @@ public class Program extends Application implements ProgramMethods  {
 				manage.copyExistingExam(copyChoice);
 				break;	
 				
-			case 12:
+			case 13:
 				
 				questionsList();
 				break;
 				
-			case 13:
+			case 14:
 				
 				manage.saveToBinaryFileAutomatically();
 				System.out.println("Saving and exiting...");
 				System.exit(0);
 				break;
-
-				case 14:
-					System.out.println("Enter 1 to sort with duplicates.\n");
-					System.out.println("Enter 2 to copy the previous collection to a new one.\n");
-					int sortingChoice = input.nextInt();
-					if (sortingChoice == 1) {
-						manage.copyArrayToANewCollectionAndSortWithDupes();
-						break;
-					}
-					else if (sortingChoice == 2) {
-						manage.copyArrayToANewCollectionAndSortNoDupes();
-						break;
-					}
-					else {
-						System.out.println("Invalid choice.");
-						System.exit(0);
-					}
-				case 15:
-					System.out.println("Please enter your new Question below:\n");
-					String newStr = input.nextLine();
-					manage.addNewStringToHashSet(newStr);
-					break;
-
-				case 16:
-					manage.printEverything();
-					System.out.println("\n\nPlease select the question number you want to delete:\n");
-					int questNum = input.nextInt();
-					manage.deleteQuestion(questNum);
-					break;
 
 			default:
 				System.out.println("Invalid option, please choose again.");
@@ -297,13 +273,12 @@ public class Program extends Application implements ProgramMethods  {
 	public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
 		Program p = new Program();
 		p.managingMethod();
-
+		launch(args);
 		if (!p.importAndSaveQuestionsList()) {
 			p.autoImportQuestions();
 		}
-
 		p.mainMenu();
-		launch(args);
+
 		}
 	
 	@Override
@@ -326,9 +301,8 @@ public class Program extends Application implements ProgramMethods  {
 		this.manage = new Manager();
 		this.choice = 0;
 		DBIntegration = new DatabaseIntegration();
-		DBIntegration.connectToSql();
+	//	DBIntegration.connectToSql();
 	}
-	
 
 	@Override
 	public void autoImportQuestions() throws ClassNotFoundException, IOException, SQLException {
@@ -340,33 +314,30 @@ public class Program extends Application implements ProgramMethods  {
 			manage.questionsList();
 		}
 	}
-	
 
 	@Override
 	public void menuOptions() {
 		System.out.println("\n--------Exam creator--------");
-		System.out.println("--------Select option:--------\n");
+		System.out.println("--------Select option--------\n");
 		System.out.println("[1] - Show all questions/answers that exist.");
 		System.out.println("[2] - Add a new question/answer.");
-		System.out.println("[3] - Update an existing question.");
-		System.out.println("[4] - Update an existing answer.");
-		System.out.println("[5] - Delete an existing answer.");
-		System.out.println("[6] - Create an exam manually.");
-		System.out.println("[7] - Create an exam automatically.");
-		System.out.println("[8] - Sort all the questions by answer length.");
-		System.out.println("[9] - Import binary data from a file.");
-		System.out.println("[10] - Save all Questions&Answers into a .txt file.");
-		System.out.println("[11] - Create a copy of an existing exam.");
-		System.out.println("[12] - Import Pre-made 'questions list'.");
-		System.out.println("[13] - Save and exit program. (Saving to a binary file)");
-		System.out.println("[14] - Copy and sort allQuestions list to a collection.");
-		System.out.println("[15] - Add a new Question to the 'HashSet'.");
-		System.out.println("[16] - Delete a question.");
+		System.out.println("[3] - Delete a question.");
+		System.out.println("[4] - Update an existing question.");
+		System.out.println("[5] - Update an existing answer.");
+		System.out.println("[6] - Delete an existing answer.");
+		System.out.println("[7] - Create an exam manually.");
+		System.out.println("[8] - Create an exam automatically.");
+		System.out.println("[9] - Sort all the questions by answer length.");
+		System.out.println("[10] - Import binary data from a file.");
+		System.out.println("[11] - Save all Questions&Answers into a .txt file.");
+		System.out.println("[12] - Create a copy of an existing exam.");
+		System.out.println("[13] - Import Pre-made 'questions list'.");
+		System.out.println("[14] - Save and exit program. (Saving to a binary file)");
 
 		System.out.println("\nEnter your choice: ");
 	}
 	
-	public void questionsList() throws SQLException {
+	public void questionsList() throws SQLException, ClassNotFoundException {
 		//General questions
 		String quest1 = "First question";
 		String quest2 = "Second question";
